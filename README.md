@@ -1,9 +1,9 @@
 # Universidad Tecnológica Nacional  (FRRO)
 				
-**Tecnicas y tecnologias avanzadas de Desarrollo de software**
-**Trabajo Práctico**
-**Ingeniería en Sistemas de Información**
-**Comisión Nº: 304**
+**Tecnicas y tecnologias avanzadas de Desarrollo de software**<br>
+**Trabajo Práctico**<br>
+**Ingeniería en Sistemas de Información**<br>
+**Comisión Nº: 304**<br>
 
 
 **Profesores**
