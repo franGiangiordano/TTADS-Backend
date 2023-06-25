@@ -1,19 +1,9 @@
 # Universidad Tecnológica Nacional  (FRRO)
 				
- <div align="center"> 
-   
-&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!
- </div>               
-
-
-  
-![](Aspose.Words.505997ea-e615-4f41-90a4-e8fe94ef404e.001.png)
-
-
-&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Tecnicas y tecnologias avanzadas de Desarrollo de software**
-&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Trabajo Práctico**
-&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Ingeniería en Sistemas de Información**
-&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Comisión Nº: 304**
+**Tecnicas y tecnologias avanzadas de Desarrollo de software**
+**Trabajo Práctico**
+**Ingeniería en Sistemas de Información**
+**Comisión Nº: 304**
 
 
 **Profesores**
