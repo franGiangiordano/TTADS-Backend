@@ -1,7 +1,14 @@
-const Batea = require('../models/batea.js');
+const { Batea, validateBatea } = require('../models/batea.js');
 
 const createBatea = async (req, res) => {
-  const { patent } = req.body;
+
+  const result = validateBatea(req.body)
+
+  if (!result.success) {
+      return res.status(400).json({ error: JSON.parse(result.error.message) })
+  }
+
+  const { patent } = result.data;
 
   try {
     const newBatea = new Batea({
@@ -32,6 +39,8 @@ const getBateaById = async (req, res) => {
   }
   
 };
+/*
+Method without pagination
 
 const getBateas = async (req, res) => {
   
@@ -43,13 +52,45 @@ const getBateas = async (req, res) => {
     return res.status(500).json(error);
   }    
  
+};*/
+
+const getBateas = async (req, res) => {
+  const page = parseInt(req.query.page) || 1; 
+  const perPage = 10; 
+
+  try {
+    const totalBateas = await Batea.countDocuments(); 
+
+    const totalPages = Math.ceil(totalBateas / perPage);
+
+    const startIndex = (page - 1) * perPage;
+
+    const bateas = await Batea.find().skip(startIndex).limit(perPage);
+
+    return res.json({
+      bateas,
+      totalPages,
+      currentPage: page
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
 };
 
+
 const updatebateaById = async (req, res) => {
+  
+    const result = validateBatea(req.body)
+
+    if (!result.success) {
+        return res.status(400).json({ error: JSON.parse(result.error.message) })
+    }
+
     try{
         const updatedbatea = await Batea.findByIdAndUpdate(
         req.params.bateaId,
-        req.body,
+        result.data,
         {
          new: true,
         }
