@@ -1,11 +1,12 @@
-const { Batea, validateBatea } = require('../models/batea.js');
+import { Request, Response } from 'express';
+import { Batea, validateBatea } from '../models/batea';
 
-const createBatea = async (req, res) => {
+const createBatea = async (req:Request, res:Response) => {
 
   const result = validateBatea(req.body)
 
   if (!result.success) {
-      return res.status(400).json({ error: JSON.parse(result.error.message) })
+    return res.status(400).json({ error: JSON.parse(result.error.message) });
   }
 
   const { patent } = result.data;
@@ -24,7 +25,7 @@ const createBatea = async (req, res) => {
   }
 };
 
-const getBateaById = async (req, res) => {
+const getBateaById = async (req:Request, res:Response) => {
   const { bateaId } = req.params;
   
   try{
@@ -54,8 +55,8 @@ const getBateas = async (req, res) => {
  
 };*/
 
-const getBateas = async (req, res) => {
-  const page = parseInt(req.query.page) || 1; 
+const getBateas = async (req:Request, res:Response) => {
+  const page = parseInt(req.query.page as string) || 1; 
   const perPage = 10; 
 
   try {
@@ -79,7 +80,7 @@ const getBateas = async (req, res) => {
 };
 
 
-const updatebateaById = async (req, res) => {
+const updatebateaById = async (req:Request, res:Response) => {
   
     const result = validateBatea(req.body)
 
@@ -106,7 +107,7 @@ const updatebateaById = async (req, res) => {
     }       
 };
 
-const deletebateaById = async (req, res) => {
+const deletebateaById = async (req:Request, res:Response) => {
   const { bateaId } = req.params;
 
   try{
@@ -121,4 +122,4 @@ const deletebateaById = async (req, res) => {
   }   
 };
 
-module.exports = {createBatea,getBateaById,getBateas,updatebateaById,deletebateaById}
+export {createBatea,getBateaById,getBateas,updatebateaById,deletebateaById}
