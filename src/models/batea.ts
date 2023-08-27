@@ -4,7 +4,9 @@ import z from 'zod';
 const BateaSchema = new mongoose.Schema(
   {
    patent: {
-     type: String, required: true 
+     type: String,
+     required: true,
+     unique:true,
     },
   },
   {

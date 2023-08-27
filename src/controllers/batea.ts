@@ -15,12 +15,16 @@ const createBatea = async (req:Request, res:Response) => {
     const newBatea = new Batea({
         patent
     });
-
     const bateaSaved = await newBatea.save();
-
     return res.status(201).json(bateaSaved);
   } catch (error) {
-    console.log(error);
+
+    if (typeof error === 'object' && error !== null && 'code' in error) {
+      if (error.code === 11000) {
+        return res.status(409).json({error: 'La patente ya existe'});
+      }
+    }
+
     return res.status(500).json(error);
   }
 };
@@ -40,24 +44,10 @@ const getBateaById = async (req:Request, res:Response) => {
   }
   
 };
-/*
-Method without pagination
-
-const getBateas = async (req, res) => {
-  
-  try{
-    const bateas = await Batea.find();
-    return res.json(bateas);
-  }catch (error) {
-    console.log(error);
-    return res.status(500).json(error);
-  }    
- 
-};*/
 
 const getBateas = async (req:Request, res:Response) => {
   const page = parseInt(req.query.page as string) || 1; 
-  const perPage = 10; 
+  const perPage = parseInt(req.query.limit as string) || 10; 
 
   try {
     const totalBateas = await Batea.countDocuments(); 
@@ -102,8 +92,14 @@ const updatebateaById = async (req:Request, res:Response) => {
          return res.status(200).json(updatedbatea);
     
     }catch (error) {
-        console.log(error);
-        return res.status(500).json(error);
+
+      if (typeof error === 'object' && error !== null && 'code' in error) {
+        if (error.code === 11000) {
+          return res.status(409).json({error: 'La patente ya existe'});
+        }
+      }
+      
+      return res.status(500).json(error);
     }       
 };
 

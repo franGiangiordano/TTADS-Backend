@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
-const URI = 'mongodb://127.0.0.1:27017/gestionFlotas';
+import dotenv from 'dotenv';
 
-const connectDB = mongoose.connect(URI)
+dotenv.config();
+
+const connectDB = mongoose.connect(process.env.URI!)
   .then(db => console.log('Db is connected'))
   .catch(error => console.error(error));
   
