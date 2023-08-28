@@ -61,7 +61,8 @@ const getBateas = async (req:Request, res:Response) => {
     return res.json({
       bateas,
       totalPages,
-      currentPage: page
+      currentPage: page,
+      totalBateas
     });
   } catch (error) {
     console.log(error);
