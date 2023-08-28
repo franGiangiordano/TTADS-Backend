@@ -2,11 +2,11 @@ import express from 'express';
 import fs from 'fs';
 import path from 'path';
 
-const router = express.Router();
+const app = express();
 
-const pathRouter = __dirname; // current directory
+const pathRouter = __dirname; // ruta actual
 
-// Remove .js from filename
+// Función para eliminar la extensión .js del nombre de archivo
 const removeExtension = (fileName: string) => {
     return fileName.split('.').shift()!;
 };
@@ -19,14 +19,19 @@ fs.readdirSync(pathRouter).filter((file) => {
 
     if (!skip) {
         const routePath = path.join(__dirname, fileWithOutExt);
-        router.use(`/${fileWithOutExt}`, require(routePath).default); // Load routes
-        console.log('CARGAR RUTA ---->', fileWithOutExt);
+        const routeModule = require(routePath).default; // Importa el módulo de la ruta
+
+        // Verifica si el módulo de la ruta es un enrutador válido
+        if (typeof routeModule === 'function' && routeModule.stack) {
+            app.use(`/${fileWithOutExt}`, routeModule); // Usa el enrutador
+            console.log('CARGAR RUTA ---->', fileWithOutExt);
+        }
     }
 });
 
-router.get('*', (req, res) => {
+app.get('*', (req, res) => {
     res.status(404);
     res.send({ error: 'Not found' });
 });
 
-export default router;
+export default app;
