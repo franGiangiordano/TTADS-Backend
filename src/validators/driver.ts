@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Request, Response, NextFunction } from "express";
 
-const validatorCreateDriver: ((req: Request, res: Response, next: NextFunction) => void)[] = [
+const validatorDriver: ((req: Request, res: Response, next: NextFunction) => void)[] = [
     (req, res, next) => {
         try {
             const schema = z.object({
@@ -15,7 +15,7 @@ const validatorCreateDriver: ((req: Request, res: Response, next: NextFunction) 
             if (validatedData.success) {
                 next();
             } else {
-                return res.status(400).json({ errors: validatedData.error.formErrors });
+                return res.status(400).json({ errors: validatedData.error.formErrors.fieldErrors });
             }
         } catch (error) {
             return res.status(500).json(error);
@@ -23,24 +23,4 @@ const validatorCreateDriver: ((req: Request, res: Response, next: NextFunction) 
     },
 ];
 
-const validatorGetDriver: ((req: Request, res: Response, next: NextFunction) => void)[] = [
-    (req, res, next) => {
-        try {
-            const schema = z.object({
-                id: z.string().refine((value) => /^[0-9a-fA-F]{24}$/.test(value))
-            });
-
-            const validatedData = schema.safeParse({ id: req.params.id });
-
-            if (validatedData.success) {
-                next();
-            } else {
-                res.status(400).json({ errors: validatedData.error.formErrors });
-            }
-        } catch (error) {
-            return res.status(500).json(error);
-        }
-    },
-];
-
-export { validatorCreateDriver, validatorGetDriver };
+export default  validatorDriver;
