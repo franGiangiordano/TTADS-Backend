@@ -2,9 +2,14 @@ import { Request, Response } from 'express';
 import driverModel from "../models/driver";
 
 const getDrivers = async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1; 
+    const perPage = parseInt(req.query.limit as string) || 10; 
     try {
-        const data = await driverModel.find({});
-        res.send({ data });
+        const totalDrivers = await driverModel.countDocuments(); 
+        const totalPages = Math.ceil(totalDrivers / perPage);
+        const startIndex = (page - 1) * perPage;
+        const drivers = await driverModel.find().skip(startIndex).limit(perPage);
+        return res.json({drivers, totalPages, currentPage: page, totalDrivers});
     } catch (error) {
         return res.status(500).json({error: 'No se obtuvo la lista de choferes'});
     }
