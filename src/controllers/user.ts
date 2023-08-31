@@ -36,10 +36,6 @@ const getUser = async (req: Request, res: Response) => {
 
 const createUser = async (req: Request, res: Response) => {
     try {
-        const existingUser = await userModel.findOne({$or: [{ name: req.body.name }, { email: req.body.email }] });
-        if (existingUser) {
-            return res.status(409).json({error: 'El usuario/email ya existe'});
-        }
         const password = await encrypt(req.body.password);
         const body = { ...req.body, password: password };
         const data = await userModel.create(body);
@@ -47,6 +43,10 @@ const createUser = async (req: Request, res: Response) => {
         data.set('password', undefined, {strict: false});
         res.send({data});
     } catch (error) {
+        const existingUser = await userModel.findOne({$or: [{ name: req.body.name }, { email: req.body.email }] });
+        if (existingUser) {
+            return res.status(409).json({error: 'El usuario/email ya existe'});
+        }
         return res.status(500).json({error: 'No se creo el usuario'});
     }
 }

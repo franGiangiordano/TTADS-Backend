@@ -30,13 +30,14 @@ const getDriver = async (req: Request, res: Response) => {
 
 const createDriver = async (req: Request, res: Response) => {
     try {
-        const existingDriver = await driverModel.findOne({ legajo: req.body.legajo, });
-        if (existingDriver) {
-            return res.status(409).json({error: 'El legajo ya existe'});
-        }
         const data = await driverModel.create(req.body);
         res.send({ data });
     } catch (error) {
+        if (typeof error === 'object' && error !== null && 'code' in error) {
+            if (error.code === 11000) {
+              return res.status(409).json({error: 'El legajo ya existe'});
+            }
+          }
         return res.status(500).json({error: 'No se creo el chofer'});
     }
 };
