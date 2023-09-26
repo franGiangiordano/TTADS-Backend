@@ -7,7 +7,6 @@ import User from "../models/user.js";
 import Role from "../models/role.js";
 import { ROLES } from "../models/role";
 
-
 dotenv.config();
 const secret = process.env.SECRET || "";
 
@@ -88,6 +87,6 @@ export const signinHandler = async (req:Request, res:Response) => {
 
     res.json({ token });
   } catch (error) {
-    console.log(error);
+    return res.status(500).json({message: "Ocurrió un error"});
   }
 };
