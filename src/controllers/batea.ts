@@ -1,31 +1,19 @@
 import { Request, Response } from 'express';
-import { Batea, validateBatea } from '../models/batea';
+import Batea  from '../models/batea';
 
 const createBatea = async (req:Request, res:Response) => {
-
-  const result = validateBatea(req.body)
-
-  if (!result.success) {
-    return res.status(400).json({ error: JSON.parse(result.error.message) });
-  }
-
-  const { patent } = result.data;
-
-  try {
-    const newBatea = new Batea({
-        patent
-    });
-    const bateaSaved = await newBatea.save();
+  try {    
+    const bateaSaved = await Batea.create(req.body);
     return res.status(201).json(bateaSaved);
   } catch (error) {
 
     if (typeof error === 'object' && error !== null && 'code' in error) {
       if (error.code === 11000) {
-        return res.status(409).json({error: 'La patente ya existe'});
+        return res.status(409).json({message: 'La patente ya existe'});
       }
     }
 
-    return res.status(500).json(error);
+    return res.status(500).json({message: 'No se pudo crear la batea'});
   }
 };
 
@@ -35,12 +23,11 @@ const getBateaById = async (req:Request, res:Response) => {
   try{
     const batea = await Batea.findById(bateaId);
     if(!batea){
-      return res.status(404).json({ error: 'ID no encontrado' });
+      return res.status(404).json({ message: 'ID no encontrado' });
     }
       return res.status(200).json(batea);
   }catch (error) {
-    console.log(error);
-    return res.status(500).json(error);
+    return res.status(500).json({message: 'Error al intentar recuperar la batea'});
   }
   
 };
@@ -66,29 +53,22 @@ const getBateas = async (req:Request, res:Response) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).json(error);
+    return res.status(500).json({message: 'No se obtuvo la lista de bateas'});
   }
 };
 
 
 const updatebateaById = async (req:Request, res:Response) => {
-  
-    const result = validateBatea(req.body)
-
-    if (!result.success) {
-        return res.status(400).json({ error: JSON.parse(result.error.message) })
-    }
-
     try{
         const updatedbatea = await Batea.findByIdAndUpdate(
         req.params.bateaId,
-        result.data,
+        req.body,
         {
          new: true,
         }
         ); 
         if(!updatedbatea){
-          return res.status(404).json({ error: 'ID no encontrado' });
+          return res.status(404).json({ message: 'ID no encontrado' });
         }      
          return res.status(200).json(updatedbatea);
     
@@ -96,11 +76,11 @@ const updatebateaById = async (req:Request, res:Response) => {
 
       if (typeof error === 'object' && error !== null && 'code' in error) {
         if (error.code === 11000) {
-          return res.status(409).json({error: 'La patente ya existe'});
+          return res.status(409).json({message: 'La patente ya existe'});
         }
       }
       
-      return res.status(500).json(error);
+      return res.status(500).json({message: 'No se pudo editar la batea'});
     }       
 };
 
@@ -110,12 +90,12 @@ const deletebateaById = async (req:Request, res:Response) => {
   try{
     const result = await Batea.findByIdAndDelete(bateaId);
     if (!result) {
-      return res.status(404).json({ error: 'ID no encontrado' });
+      return res.status(404).json({ message: 'ID no encontrado' });
     }
      return res.status(204).json();
   }catch (error) {
     console.log(error);
-    return res.status(500).json(error);
+    return res.status(500).json({message: 'No se pudo eliminar la batea'});
   }   
 };
 
