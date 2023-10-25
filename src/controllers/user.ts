@@ -26,7 +26,10 @@ const getUsers = async (req: Request, res: Response) => {
 const getUser = async (req: Request, res: Response) => {
     try {
         const { id } = req.params
-        const data = await User.findById(id, { password: 0 })
+        const data = await User.findById(id, { password: 0 }).populate(
+            "roles"
+          );
+          
         if(!data){
             return res.status(404).json({ message: 'ID no encontrado' });
         }
