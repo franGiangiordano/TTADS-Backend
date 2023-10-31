@@ -3,6 +3,7 @@ import User from "../models/user";
 import Role from "../models/role";
 
 import bcryptjs from "bcryptjs";
+import { EntityListResponse } from '../models/entity.list.response.model';
 
 const encrypt = async (passwordPlain: string): Promise<string> => {
     const hash = await bcryptjs.hash(passwordPlain, 10);
@@ -10,16 +11,16 @@ const encrypt = async (passwordPlain: string): Promise<string> => {
 };
 
 const getUsers = async (req: Request, res: Response) => {
-    const page = parseInt(req.query.page as string) || 1; 
-    const perPage = parseInt(req.query.limit as string) || 10; 
+    const page = parseInt(req.query.page as string) || 1;
+    const perPage = parseInt(req.query.limit as string) || 10;
     try {
-        const totalUsers = await User.countDocuments(); 
+        const totalUsers = await User.countDocuments();
         const totalPages = Math.ceil(totalUsers / perPage);
         const startIndex = (page - 1) * perPage;
         const users = await User.find({}, { password: 0 }).skip(startIndex).limit(perPage);
-        return res.json({users, totalPages, currentPage: page, totalUsers});
+        return res.json(new EntityListResponse(users, totalUsers, page, totalPages));
     } catch (error) {
-        return res.status(500).json({message: 'No se obtuvo la lista de usuarios'});
+        return res.status(500).json({ message: 'No se obtuvo la lista de usuarios' });
     }
 }
 
@@ -28,15 +29,15 @@ const getUser = async (req: Request, res: Response) => {
         const { id } = req.params
         const data = await User.findById(id, { password: 0 }).populate(
             "roles"
-          );
-          
-        if(!data){
+        );
+
+        if (!data) {
             return res.status(404).json({ message: 'ID no encontrado' });
         }
         return res.status(200).json(data);
-        }catch (error) {
-            return res.status(500).json({message: 'No se obtuvo el usuario con ese id'});
-    }       
+    } catch (error) {
+        return res.status(500).json({ message: 'No se obtuvo el usuario con ese id' });
+    }
 };
 const createUser = async (req: Request, res: Response) => {
     try {
@@ -48,20 +49,20 @@ const createUser = async (req: Request, res: Response) => {
             email,
             password,
             roles: rolesFound.map((role) => role._id),
-          });
-          
+        });
+
         user.password = await User.encryptPassword(user.password);
 
         const data = await user.save();
         //eliminar el campo "password" del objeto data antes de enviarlo como respuesta al cliente por seguridad
-        data.set('password', undefined, {strict: false});
-        res.send({data});
+        data.set('password', undefined, { strict: false });
+        res.send({ data });
     } catch (error) {
-        const existingUser = await User.findOne({$or: [{ name: req.body.name }, { email: req.body.email }] });
+        const existingUser = await User.findOne({ $or: [{ name: req.body.name }, { email: req.body.email }] });
         if (existingUser) {
-            return res.status(409).json({message: 'El usuario/email ya existe'});
+            return res.status(409).json({ message: 'El usuario/email ya existe' });
         }
-        return res.status(500).json({message: 'No se creo el usuario'});
+        return res.status(500).json({ message: 'No se creo el usuario' });
     }
 }
 
@@ -83,20 +84,20 @@ const updateUser = async (req: Request, res: Response) => {
     } catch (error) {
         if (typeof error === 'object' && error !== null && 'code' in error) {
             if (error.code === 11000) {
-              return res.status(409).json({message: 'El usuario/email ya existe'});
+                return res.status(409).json({ message: 'El usuario/email ya existe' });
             }
-          }
-        return res.status(500).json({message: 'No se edito el usuario'});
+        }
+        return res.status(500).json({ message: 'No se edito el usuario' });
     }
 }
 
-const deleteUser = async(req: Request, res: Response) => {
+const deleteUser = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const data = await User.deleteOne({ _id: id });
         res.send({ data });
     } catch (error) {
-        return res.status(500).json({message: 'No se elimino el usuario'});
+        return res.status(500).json({ message: 'No se elimino el usuario' });
     }
 }
 
