@@ -7,16 +7,22 @@ const validatorUser: ((req: Request, res: Response, next: NextFunction) => void)
             const isPutRequest = req.method === "PUT";
             const nameOptional = req.originalUrl === "/api/auth/signin" || req.method === "PUT";
 
+            const nameValidation = z.string().regex(/^[A-Za-z\s]+$/, { message: "El campo nombre debe contener solo letras" }).min(1);
+            
+            const emailValidation = z.string().email({ message: "El campo email debe ser una dirección de correo válida" });
+
+            const passValidation = z.string().min(1, { message: "El campo contraseña no puede estar vacío" });
+
             const schema = z.object({
                 name: nameOptional 
-                    ? z.string().regex(/^[A-Za-z\s]+$/, { message: "El campo nombre debe contener solo letras" }).min(1).optional() 
-                    : z.string().regex(/^[A-Za-z\s]+$/, { message: "El campo nombre debe contener solo letras" }).min(1),
+                    ? nameValidation.optional() 
+                    : nameValidation,
                 email: isPutRequest 
-                    ? z.string().email({ message: "El campo email debe ser una dirección de correo válida" }).optional() 
-                    : z.string().email({ message: "El campo email debe ser una dirección de correo válida" }),
+                    ? emailValidation.optional() 
+                    : emailValidation,
                 password: isPutRequest 
-                    ? z.string().min(1, { message: "El campo contraseña no puede estar vacío" }).optional() 
-                    : z.string().min(1, { message: "El campo contraseña no puede estar vacío" }),
+                    ? passValidation.optional() 
+                    : passValidation,
             });
 
             const validatedData = schema.safeParse(req.body);

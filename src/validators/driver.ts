@@ -6,16 +6,22 @@ const validatorDriver: ((req: Request, res: Response, next: NextFunction) => voi
         try {
             const isPutRequest = req.method === "PUT";
 
+            const legValidation = z.number().min(1, { message: "El campo legajo deber ser mayor a 0" });
+
+            const nameValidation = z.string().regex(/^[A-Za-z\s]+$/, { message: "El campo nombre debe contener solo letras" }).min(1);
+
+            const surnameValidation = z.string().regex(/^[A-Za-z\s]+$/, { message: " El campo apellido debe contener solo letras" }).min(1);
+
             const schema = z.object({
                 legajo: isPutRequest 
-                    ? z.number().min(1, { message: "El campo legajo deber ser mayor a 0" }).optional() 
-                    : z.number().min(1, { message: "El campo legajo debe ser mayor a 0"}),
+                    ? legValidation.optional() 
+                    : legValidation,
                 name: isPutRequest 
-                    ? z.string().regex(/^[A-Za-z\s]+$/, { message: "El campo nombre debe contener solo letras" }).min(1).optional() 
-                    : z.string().regex(/^[A-Za-z\s]+$/, { message: "El campo nombre debe contener solo letras" }).min(1),
+                    ? nameValidation.optional() 
+                    : nameValidation,
                 surname: isPutRequest 
-                    ? z.string().regex(/^[A-Za-z\s]+$/, { message: " El campo apellido debe contener solo letras" }).min(1).optional() 
-                    : z.string().regex(/^[A-Za-z\s]+$/, { message: " El campo apellido debe contener solo letras" }).min(1),
+                    ? surnameValidation.optional() 
+                    : surnameValidation,
             });
 
             const validatedData = schema.safeParse(req.body);
