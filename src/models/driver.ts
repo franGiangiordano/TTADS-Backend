@@ -21,6 +21,6 @@ const DriverSchema: Schema = new Schema(
     }
 );
 
-const driverModel = mongoose.model("Driver", DriverSchema);
+const Driver = mongoose.model("Driver", DriverSchema);
 
-export default driverModel;
+export default Driver;

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Batea  from '../models/batea';
+import { EntityListResponse } from '../models/entity.list.response.model';
 
 const createBatea = async (req:Request, res:Response) => {
   try {    
@@ -45,12 +46,7 @@ const getBateas = async (req:Request, res:Response) => {
 
     const bateas = await Batea.find().skip(startIndex).limit(perPage);
 
-    return res.json({
-      bateas,
-      totalPages,
-      currentPage: page,
-      totalBateas
-    });
+    return res.json(new EntityListResponse(bateas, totalBateas, startIndex, totalPages));
   } catch (error) {
     console.log(error);
     return res.status(500).json({message: 'No se obtuvo la lista de bateas'});
