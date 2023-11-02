@@ -1,10 +1,11 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
+
 const BateaSchema = new mongoose.Schema(
   {
-   patent: {
-     type: String,
-     required: true,
-     unique:true,
+    patent: {
+      type: String,
+      required: true,
+      unique: true,
     },
   },
   {
@@ -12,5 +13,6 @@ const BateaSchema = new mongoose.Schema(
   }
 );
 
-const Batea = mongoose.model('Batea', BateaSchema);
+const Batea = mongoose.model("Batea", BateaSchema);
+
 export default Batea;

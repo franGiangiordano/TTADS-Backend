@@ -1,0 +1,15 @@
+{
+  "singleQuote": false,
+  "arrowParens": "always",
+  "printWidth": 80,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "bracketSpacing": true,
+  "jsxBracketSameLine": false,
+  "trailingComma": "es5",
+  "quoteProps": "as-needed",
+  "endOfLine": "auto",
+  "importOrder": ["^@/components/", "^@/utils/", "^@/styles/", "^@/", "^[./]"],
+  "importOrderSeparation": true
+}
