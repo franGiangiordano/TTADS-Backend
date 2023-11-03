@@ -1,16 +1,16 @@
-# Universidad Tecnológica Nacional  (FRRO)
-				
+# Universidad Tecnológica Nacional (FRRO)
+
 **Tecnicas y tecnologias avanzadas de Desarrollo de software**<br>
 **Trabajo Práctico**<br>
 **Ingeniería en Sistemas de Información**<br>
 **Comisión Nº: 304**<br>
-
 
 **Profesores**
 
 Adrián Meca <br> Lucas Luna
 
 **Alumnos**
+
 <div style="margin-left: 25px;">
   
  Nombre y Apellido </t> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mail &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Legajo
@@ -41,7 +41,6 @@ Adrián Meca <br> Lucas Luna
       <a name="_page2_x72.00_y437.51"></a>Tema
 </div>
 <br>
-
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;“Sistema de gestión de flotas de logística”
 
@@ -77,39 +76,29 @@ RN8: El tipo de acoplado hace referencia a lo que transporta, puede ser: Térmic
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Para regularidad:
 
+| **Requisitos** | **Detalle**                                                                                |
+| -------------- | ------------------------------------------------------------------------------------------ |
+| CRUD simple    | <p>1. CRUD Batea.</p><p>2. CRUD Acoplado.</p><p>3. CRUD Chofer.</p><p>4. CRUD Usuario.</p> |
 
-
-|**Requisitos**|**Detalle**|
-| - | - |
-|CRUD simple|<p>1. CRUD Batea.</p><p>2. CRUD Acoplado.</p><p>3. CRUD Chofer.</p><p>4. CRUD Usuario.</p>|
-
-
-
-|CRUD dependiente|<p>1. CRUD Viaje (Depende de CRUD Equipo).</p><p>2. CRUD Equipo (Depende de CRUD Batea, Acoplado y Chofer).</p>|
-| - | :- |
-|Listado + detalle|<p>1. Listado de Equipos a la fecha.</p><p>2. Listado de Choferes a la fecha.</p><p>3. Viajes con filtro por equipo, chofer y tiempo.</p>|
-|CUU|<p>1. Cargar gastos de un viaje.</p><p>2. Generar planilla con viajes por chofer en el mes.</p>|
+| CRUD dependiente  | <p>1. CRUD Viaje (Depende de CRUD Equipo).</p><p>2. CRUD Equipo (Depende de CRUD Batea, Acoplado y Chofer).</p>                           |
+| ----------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
+| Listado + detalle | <p>1. Listado de Equipos a la fecha.</p><p>2. Listado de Choferes a la fecha.</p><p>3. Viajes con filtro por equipo, chofer y tiempo.</p> |
+| CUU               | <p>1. Cargar gastos de un viaje.</p><p>2. Generar planilla con viajes por chofer en el mes.</p>                                           |
 
 <br>
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 Para aprobación directa:
 
-
-
-|**Requisitos**|**Detalle**|
-| - | - |
-|CRUD simple|1\. CRUD Reparaciones.|
-|CRUD dependiente|1\. CRUD Reparaciones (Depende de CRUD Equipo).|
-|Servicio de Geolocación|1\. Búsqueda de localidades en un mapa integrado, que calcula además los KM entre localidades.|
-|CUU|1\. Generar listado sobre reparaciones por equipo, chofer, batea y/o acoplado con respectivos KM recorridos.|
+| **Requisitos**          | **Detalle**                                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------ |
+| CRUD simple             | 1\. CRUD Reparaciones.                                                                                       |
+| CRUD dependiente        | 1\. CRUD Reparaciones (Depende de CRUD Equipo).                                                              |
+| Servicio de Geolocación | 1\. Búsqueda de localidades en un mapa integrado, que calcula además los KM entre localidades.               |
+| CUU                     | 1\. Generar listado sobre reparaciones por equipo, chofer, batea y/o acoplado con respectivos KM recorridos. |
 
 &nbsp;&nbsp;&nbsp;&nbsp;<a name="_page5_x72.00_y525.77"></a>**Alcance Adicional Voluntario**
 
-
-
-|**Requisitos**|**Detalle**|
-| - | - |
-|Listados|1\. Listado de Reparaciones entre rangos de fecha (Filtró por chofer, por equipo, con los KM hechos).|
-
-
+| **Requisitos** | **Detalle**                                                                                           |
+| -------------- | ----------------------------------------------------------------------------------------------------- |
+| Listados       | 1\. Listado de Reparaciones entre rangos de fecha (Filtró por chofer, por equipo, con los KM hechos). |
