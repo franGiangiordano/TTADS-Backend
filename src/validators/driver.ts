@@ -8,6 +8,13 @@ const validatorDriver: ((
 ) => void)[] = [
   (req, res, next) => {
     try {
+      
+      req.body = {
+        legajo: req.body.legajo,        
+        name: req.body.name,        
+        surname: req.body.surname,        
+      }
+      
       const isPutRequest = req.method === "PUT";
 
       const legValidation = z

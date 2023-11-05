@@ -8,13 +8,17 @@ const validatorBatea: ((
 ) => void)[] = [
   (req, res, next) => {
     try {
+      
+      req.body = {
+        patent: req.body.patent,        
+      }
+      
       const schema = z.object({
         patent: z.string().regex(/^[A-Z0-9]{2,3}-?[A-Z0-9]{2,4}$/, {
           message: "Formato de patente inválido",
         }),
       });
       const validatedData = schema.safeParse(req.body);
-
       if (validatedData.success) {
         next();
       } else {

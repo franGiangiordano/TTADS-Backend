@@ -8,6 +8,13 @@ const validatorUser: ((
 ) => void)[] = [
   (req, res, next) => {
     try {
+
+      req.body = {
+        name: req.body.name,        
+        email: req.body.email,        
+        password: req.body.password,        
+      }
+
       const isPutRequest = req.method === "PUT";
       const nameOptional =
         req.originalUrl === "/api/auth/signin" || req.method === "PUT";
