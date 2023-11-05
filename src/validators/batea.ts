@@ -18,9 +18,10 @@ const validatorBatea: ((
       if (validatedData.success) {
         next();
       } else {
+        const error = validatedData?.error?.formErrors?.fieldErrors?.patent?.[0];
         return res
           .status(400)
-          .json({ errors: validatedData.error.formErrors.fieldErrors });
+          .json({ message: error});
       }
     } catch (error) {
       return res.status(500).json(error);

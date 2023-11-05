@@ -40,7 +40,7 @@ const validatorUser: ((
       } else {
         return res
           .status(400)
-          .json({ errors: validatedData.error.formErrors.fieldErrors });
+          .json({ message: validatedData.error.formErrors.fieldErrors });
       }
     } catch (error) {
       return res.status(500).json(error);
