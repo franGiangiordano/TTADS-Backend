@@ -37,14 +37,16 @@ const getBateas = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const perPage = parseInt(req.query.limit as string) || 10;
 
-  try {
-    const totalBateas = await Batea.countDocuments();
+  const search = req.query.search as string || '';
+  const searchOptions = { patent: { $regex: search, $options: 'i' } }
 
+  try {
+    const totalBateas = await Batea.countDocuments(search != '' ? searchOptions : {});
     const totalPages = Math.ceil(totalBateas / perPage);
 
     const startIndex = (page - 1) * perPage;
-
-    const bateas = await Batea.find().skip(startIndex).limit(perPage);
+   
+    const bateas = await Batea.find(search != '' ? searchOptions : {}).skip(startIndex).limit(perPage);
 
     return res.json(
       new EntityListResponse(bateas, totalBateas, startIndex, totalPages)

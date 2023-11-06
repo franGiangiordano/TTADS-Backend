@@ -16,11 +16,11 @@ router.get("/", getBateas);
 
 router.get("/:bateaId", getBateaById);
 
-router.post("/", [verifyToken, isManager], validatorBatea, createBatea);
+router.post("/", [verifyToken, isAdmin], validatorBatea, createBatea);
 
 router.put(
   "/:bateaId",
-  [verifyToken, isManager],
+  [verifyToken, isAdmin],
   validatorBatea,
   updatebateaById
 );
