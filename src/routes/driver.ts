@@ -14,8 +14,8 @@ const router = express.Router();
 
 router.get("/", getDrivers);
 router.get("/:id", getDriver);
-router.post("/", [verifyToken, isManager], validatorDriver, createDriver);
-router.put("/:id", [verifyToken, isManager], validatorDriver, updateDriver);
+router.post("/", [verifyToken, isAdmin], validatorDriver, createDriver);
+router.put("/:id", [verifyToken, isAdmin], validatorDriver, updateDriver);
 router.delete("/:id", [verifyToken, isAdmin], deleteDriver);
 
 export default router;

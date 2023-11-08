@@ -5,11 +5,27 @@ import Driver from "../models/driver";
 const getDrivers = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const perPage = parseInt(req.query.limit as string) || 10;
+
+  const search = req.query.search as string || '';
+  let query: any = {};
+
+  if (search) {
+    if (isNaN(parseFloat(search))) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { surname: { $regex: search, $options: 'i' } },
+      ];
+    } else {
+      query.legajo = parseInt(search);          
+    }  
+  }
+
   try {
-    const totalDrivers = await Driver.countDocuments();
+    const totalDrivers = await Driver.countDocuments(query);
+    
     const totalPages = Math.ceil(totalDrivers / perPage);
     const startIndex = (page - 1) * perPage;
-    const drivers = await Driver.find().skip(startIndex).limit(perPage);
+    const drivers = await Driver.find(query).skip(startIndex).limit(perPage);
     return res.json(
       new EntityListResponse(drivers, totalDrivers, page, totalPages)
     );

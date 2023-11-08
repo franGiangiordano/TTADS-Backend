@@ -18,8 +18,13 @@ const validatorDriver: ((
       const isPutRequest = req.method === "PUT";
 
       const legValidation = z
-        .number()
-        .min(1, { message: "El campo legajo deber ser mayor a 0" });
+        .string()
+        .refine((value) => {
+          const legajoNumber = parseFloat(value);
+          return !isNaN(legajoNumber) && legajoNumber > 0;
+        }, {
+          message: "El campo legajo debe ser un número mayor a 0",
+        });
 
       const nameValidation = z
         .string()

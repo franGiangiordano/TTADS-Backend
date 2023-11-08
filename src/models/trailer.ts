@@ -1,17 +1,13 @@
 import mongoose, { Schema } from "mongoose";
 
-const DriverSchema: Schema = new Schema(
+const TrailerScheme: Schema = new Schema(
   {
-    legajo: {
+    patent: {
       type: String,
       required: true,
       unique: true,
     },
-    name: {
-      type: String,
-      required: true,
-    },
-    surname: {
+    type: {
       type: String,
       required: true,
     },
@@ -21,6 +17,6 @@ const DriverSchema: Schema = new Schema(
   }
 );
 
-const Driver = mongoose.model("Driver", DriverSchema);
+const Trailer = mongoose.model("Trailer", TrailerScheme);
 
-export default Driver;
+export default Trailer;
