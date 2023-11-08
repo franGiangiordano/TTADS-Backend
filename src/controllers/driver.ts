@@ -7,19 +7,16 @@ const getDrivers = async (req: Request, res: Response) => {
   const perPage = parseInt(req.query.limit as string) || 10;
 
   const search = req.query.search as string || '';
-  let query: any = {};
+  const query: any = {};
 
   if (search) {
-    if (isNaN(parseFloat(search))) {
-      query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { surname: { $regex: search, $options: 'i' } },
-      ];
-    } else {
-      query.legajo = parseInt(search);          
-    }  
+    query.$or = [
+      { name: { $regex: search, $options: 'i' } },
+      { surname: { $regex: search, $options: 'i' } },
+      { legajo: { $regex: search, $options: 'i' } },
+    ];
   }
-
+  
   try {
     const totalDrivers = await Driver.countDocuments(query);
     
