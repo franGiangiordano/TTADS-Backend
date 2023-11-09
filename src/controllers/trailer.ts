@@ -17,8 +17,8 @@ const getTrailers = async (req: Request, res: Response) => {
     const totalTrailers = await Trailer.countDocuments(search != '' ? searchOptions : {});
     const totalPages = Math.ceil(totalTrailers / perPage);
     const startIndex = (page - 1) * perPage;
-    const trailers = await Trailer.find(search != '' ? searchOptions : {}).skip(startIndex).limit(perPage);
-    return res.json({ trailers, totalPages, currentPage: page, totalTrailers });
+    const results = await Trailer.find(search != '' ? searchOptions : {}).skip(startIndex).limit(perPage);
+    return res.json({ results, totalPages, currentPage: page, totalTrailers });
   } catch (error) {
     return res
       .status(500)
