@@ -1,66 +1,60 @@
+// validatorDriver.ts
 import { z } from "zod";
 import { Request, Response, NextFunction } from "express";
 
-const validatorDriver: ((
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => void)[] = [
-  (req, res, next) => {
-    try {
-      
-      req.body = {
-        legajo: req.body.legajo,        
-        name: req.body.name,        
-        surname: req.body.surname,        
-      }
-      
-      const isPutRequest = req.method === "PUT";
+const validatorDriver = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    req.body = {
+      legajo: req.body.legajo,
+      name: req.body.name,
+      surname: req.body.surname,
+    };
 
-      const legValidation = z
-        .string()
-        .refine((value) => {
-          const legajoNumber = parseFloat(value);
-          return !isNaN(legajoNumber) && legajoNumber > 0;
-        }, {
-          message: "El campo legajo debe ser un número mayor a 0",
-        });
+    const isPutRequest = req.method === "PUT";
 
-      const nameValidation = z
-        .string()
-        .regex(/^[A-Za-z\s]+$/, {
-          message: "El campo nombre debe contener solo letras",
-        })
-        .min(1);
-
-      const surnameValidation = z
-        .string()
-        .regex(/^[A-Za-z\s]+$/, {
-          message: " El campo apellido debe contener solo letras",
-        })
-        .min(1);
-
-      const schema = z.object({
-        legajo: isPutRequest ? legValidation.optional() : legValidation,
-        name: isPutRequest ? nameValidation.optional() : nameValidation,
-        surname: isPutRequest
-          ? surnameValidation.optional()
-          : surnameValidation,
+    const legValidation = z
+      .string()
+      .refine((value) => {
+        const legajoNumber = parseFloat(value);
+        return !isNaN(legajoNumber) && legajoNumber > 0;
+      }, {
+        message: "El campo legajo debe ser un número mayor a 0",
       });
 
-      const validatedData = schema.safeParse(req.body);
+    const nameValidation = z
+      .string()
+      .regex(/^[A-Za-z\s]+$/, {
+        message: "El campo nombre debe contener solo letras",
+      })
+      .min(1);
 
-      if (validatedData.success) {
-        next();
-      } else {
-        return res
-          .status(400)
-          .json({ message: validatedData.error.formErrors.fieldErrors });
-      }
-    } catch (error) {
-      return res.status(500).json(error);
+    const surnameValidation = z
+      .string()
+      .regex(/^[A-Za-z\s]+$/, {
+        message: " El campo apellido debe contener solo letras",
+      })
+      .min(1);
+
+    const schema = z.object({
+      legajo: isPutRequest ? legValidation.optional() : legValidation,
+      name: isPutRequest ? nameValidation.optional() : nameValidation,
+      surname: isPutRequest
+        ? surnameValidation.optional()
+        : surnameValidation,
+    });
+
+    const validatedData = schema.safeParse(req.body);
+
+    if (validatedData.success) {
+      next();
+    } else {
+      return res
+        .status(400)
+        .json({ message: validatedData.error.formErrors.fieldErrors });
     }
-  },
-];
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
 
 export default validatorDriver;

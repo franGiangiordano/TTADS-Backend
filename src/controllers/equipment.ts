@@ -8,10 +8,9 @@ import { EntityListResponse } from "../models/entity.list.response.model";
 const createEquipment = async (req: Request, res: Response) => {
     try {
       const { description, until_date, driver, batea, trailer } = req.body;
-
-      const driverFound = await Driver.findOne({ legajo: driver });
-      const bateaFound = await Batea.findOne({ patent: batea});
-      const trailerFound =  await Trailer.findOne({ patent: trailer });  
+      const driverFound = await Driver.findOne({ legajo: driver.legajo });      
+      const bateaFound = await Batea.findOne({ patent: batea.patent});
+      const trailerFound =  await Trailer.findOne({ patent: trailer.patent });  
       
       if (!driverFound) {
         return res.status(404).json({ message: "Driver no encontrado" });
@@ -82,9 +81,9 @@ const updateEquipmentById = async (req: Request, res: Response) => {
 
     const { description, until_date, driver, batea, trailer } = req.body;
 
-    const driverFound = await Driver.findOne({ legajo: driver });
-    const bateaFound = await Batea.findOne({ patent: batea});
-    const trailerFound = await Trailer.findOne({ patent: trailer});
+    const driverFound = await Driver.findOne({ legajo: driver.legajo });
+    const bateaFound = await Batea.findOne({ patent: batea.patent});
+    const trailerFound = await Trailer.findOne({ patent: trailer.patent});
 
     if (!driverFound) {
       return res.status(404).json({ message: "Driver no encontrado" });

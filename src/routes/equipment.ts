@@ -24,7 +24,6 @@ router.put(
 router.delete(
   "/:equipmentId", 
   [verifyToken, isAdmin], 
-    validatorEquipment,
   deleteEquipmentById
   );  
 export default router;
