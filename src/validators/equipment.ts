@@ -23,9 +23,6 @@ const validatorEquipment: ((
       .string()
       .nonempty({ message: "La descripción no puede estar vacía" });
 
-      //Falta validar fecha
-      const until_date = z.string();
-
 //Estaria bueno reutilizar los otros validadores pero no se como hacerlo
       const batea = z
       .object({
@@ -59,7 +56,6 @@ const validatorEquipment: ((
  
       const schema = z.object({
         description: isPutRequest ? description.optional() : description,
-        until_date: isPutRequest ? until_date.optional() : until_date, 
         batea: isPutRequest ? batea.optional() : batea,  
         trailer: isPutRequest ? trailer.optional() : trailer,  
         driver: isPutRequest ? driver.optional() : driver,  

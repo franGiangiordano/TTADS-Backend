@@ -7,24 +7,24 @@ import { EntityListResponse } from "../models/entity.list.response.model";
 
 const createEquipment = async (req: Request, res: Response) => {
     try {
-      const { description, until_date, driver, batea, trailer } = req.body;
+      const { description, driver, batea, trailer } = req.body;
       const driverFound = await Driver.findOne({ legajo: driver.legajo });      
       const bateaFound = await Batea.findOne({ patent: batea.patent});
       const trailerFound =  await Trailer.findOne({ patent: trailer.patent });  
       
-      if (!driverFound) {
-        return res.status(404).json({ message: "Driver no encontrado" });
-      }
-    
-      if (!bateaFound) {
-        return res.status(404).json({ message: "Batea no encontrada" });
-      }
-  
-      if (!trailerFound) {
-        return res.status(404).json({ message: "Trailer no encontrado" });
+      if (!driverFound || !bateaFound || !trailerFound) {
+        return res.status(404).json({ message: "Driver, Batea o Trailer no encontrado" });
       }
 
-      const equipmentSaved = await Equipment.create({description: description, until_date: until_date, driver: driverFound._id, trailer: trailerFound._id, batea: bateaFound._id});
+      const until_date = new Date();
+
+      const equipmentSaved = await Equipment.create({
+        description: description,
+        until_date: until_date,
+        driver: driverFound._id,
+        trailer: trailerFound._id,
+        batea: bateaFound._id,
+      });
       
       return res.status(201).json(equipmentSaved);      
     } catch (error) {
@@ -37,7 +37,7 @@ const createEquipment = async (req: Request, res: Response) => {
       return res.status(500).json({ message: "No se pudo crear el equipo" });
     }
 };
-
+//Solo filtra por descripcion
 const getEquipments = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
@@ -78,25 +78,18 @@ const getEquipmentById = async (req: Request, res: Response) => {
 const updateEquipmentById = async (req: Request, res: Response) => {
   try {
     const { equipmentId } = req.params;
-
-    const { description, until_date, driver, batea, trailer } = req.body;
+    const { description, driver, batea, trailer } = req.body;
 
     const driverFound = await Driver.findOne({ legajo: driver.legajo });
     const bateaFound = await Batea.findOne({ patent: batea.patent});
     const trailerFound = await Trailer.findOne({ patent: trailer.patent});
 
-    if (!driverFound) {
-      return res.status(404).json({ message: "Driver no encontrado" });
+    if (!driverFound || !bateaFound || !trailerFound) {
+      return res.status(404).json({ message: "Driver, Batea o Trailer no encontrado" });
     }
 
-    if (!bateaFound) {
-      return res.status(404).json({ message: "Batea no encontrada" });
-    }
-
-    if (!trailerFound) {
-      return res.status(404).json({ message: "Trailer no encontrado" });
-    }
-
+    const until_date = new Date();
+    
     const updatedEquipment = await Equipment.findByIdAndUpdate(equipmentId, {
       description: description,
       until_date: until_date,
