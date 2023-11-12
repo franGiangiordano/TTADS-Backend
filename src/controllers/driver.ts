@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { EntityListResponse } from "../models/entity.list.response.model";
 import Driver from "../models/driver";
+import Equipment from "../models/equipment";
 
 const getDrivers = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
@@ -81,10 +82,20 @@ const updateDriver = async (req: Request, res: Response) => {
 };
 
 const deleteDriver = async (req: Request, res: Response) => {
+  const { id } = req.params;    
+
   try {
-    const { id } = req.params;
-    const data = await Driver.deleteOne({ _id: id });
-    res.send({ data });
+    const equipment = await Equipment.findOne({ driver: id });
+    if (equipment) {
+      return res.status(400).json({ message: "El conductor forma parte de un equipo, no se puede eliminar" });
+    }
+
+    const data = await Driver.findByIdAndDelete({ _id: id });
+    if (!data) {
+      return res.status(404).json({ message: "ID no encontrado" });
+    }
+    
+    return res.status(204).json();
   } catch (error) {
     return res.status(500).json({ message: "No se elimino el chofer" });
   }

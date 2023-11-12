@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Batea from "../models/batea";
+import Equipment from "../models/equipment";
 import { EntityListResponse } from "../models/entity.list.response.model";
 
 const createBatea = async (req: Request, res: Response) => {
@@ -85,10 +86,16 @@ const deletebateaById = async (req: Request, res: Response) => {
   const { bateaId } = req.params;
 
   try {
+    const equipment = await Equipment.findOne({ batea: bateaId });
+    if (equipment) {
+      return res.status(400).json({ message: "La batea forma parte de un equipo, no se puede eliminar" });
+    }
+    
     const result = await Batea.findByIdAndDelete(bateaId);
     if (!result) {
       return res.status(404).json({ message: "ID no encontrado" });
     }
+    
     return res.status(204).json();
   } catch (error) {
     console.log(error);
