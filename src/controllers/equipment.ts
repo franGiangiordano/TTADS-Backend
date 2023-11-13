@@ -16,11 +16,8 @@ const createEquipment = async (req: Request, res: Response) => {
         return res.status(404).json({ message: "Driver, Batea o Trailer no encontrado" });
       }
 
-      const until_date = new Date();
-
       const equipmentSaved = await Equipment.create({
         description: description,
-        until_date: until_date,
         driver: driverFound._id,
         trailer: trailerFound._id,
         batea: bateaFound._id,
@@ -28,6 +25,7 @@ const createEquipment = async (req: Request, res: Response) => {
       
       return res.status(201).json(equipmentSaved);      
     } catch (error) {
+      console.log(error);
       if (typeof error === "object" && error !== null && "code" in error) {
         if (error.code === 11000) {
           return res.status(409).json({ message: "El equipo ingresado ya existe" });
@@ -87,12 +85,9 @@ const updateEquipmentById = async (req: Request, res: Response) => {
     if (!driverFound || !bateaFound || !trailerFound) {
       return res.status(404).json({ message: "Driver, Batea o Trailer no encontrado" });
     }
-
-    const until_date = new Date();
     
     const updatedEquipment = await Equipment.findByIdAndUpdate(equipmentId, {
       description: description,
-      until_date: until_date,
       driver: driverFound._id,
       batea: bateaFound._id,
       trailer: trailerFound._id

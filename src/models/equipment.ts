@@ -5,11 +5,7 @@ const EquipmentSchema = new mongoose.Schema(
         description: {
             type: String,
             required: true,
-        },
-        until_date: {
-            type: Date,
-            required: true,
-        },
+        },        
         driver:{
             type: mongoose.Schema.Types.ObjectId,
             ref: "Driver",
@@ -25,9 +21,18 @@ const EquipmentSchema = new mongoose.Schema(
             ref: "Trailer",
             required: true,
         },
+        createdAt: {
+            type: Date,
+            default: Date.now,
+        },
+        updatedAt: {
+            type: Date,
+            default: Date.now,
+        },
     },
     {
         versionKey: false,
+        timestamps: true,
     }
 )
 
