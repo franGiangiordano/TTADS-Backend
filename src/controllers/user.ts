@@ -13,13 +13,26 @@ const encrypt = async (passwordPlain: string): Promise<string> => {
 const getUsers = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const perPage = parseInt(req.query.limit as string) || 10;
+
+  const search = req.query.search as string || '';
+  const query: any = {};
+
+  if (search) {
+    query.$or = [
+      { name: { $regex: search, $options: 'i' } },
+      { email: { $regex: search, $options: 'i' } },     
+    ];
+  }
+
   try {
-    const totalUsers = await User.countDocuments();
+    const totalUsers = await User.countDocuments(query);
     const totalPages = Math.ceil(totalUsers / perPage);
     const startIndex = (page - 1) * perPage;
-    const users = await User.find({}, { password: 0 })
+    const users = await User.find(query, { password: 0 })
       .skip(startIndex)
-      .limit(perPage);
+      .limit(perPage).populate(
+        "roles"
+      );
     return res.json(
       new EntityListResponse(users, totalUsers, page, totalPages)
     );
@@ -33,7 +46,7 @@ const getUsers = async (req: Request, res: Response) => {
 const getUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const data = await User.findById(id, { password: 0 }).populate("roles");
+    const data = await User.findById(id, { password: 0 }).populate("roles");   
 
     if (!data) {
       return res.status(404).json({ message: "ID no encontrado" });
@@ -78,7 +91,7 @@ const updateUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const updateData = { ...req.body };
-    // Encriptar la nueva contraseña
+
     if (updateData.password) {
       updateData.password = await encrypt(updateData.password);
     }
@@ -88,7 +101,7 @@ const updateUser = async (req: Request, res: Response) => {
     if (!updatedUser) {
       return res.status(200).json(updatedUser);
     }
-    // Ocultar la contraseña en la respuesta
+
     updatedUser.set("password", undefined, { strict: false });
     res.send({ user: updatedUser });
   } catch (error) {
