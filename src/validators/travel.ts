@@ -18,16 +18,36 @@ const validatorTravel: ((
           final_location: req.body.final_location,
           equipment: req.body.equipment        
         }
+        const arrivalDate = new Date(req.body.arrival_date);
+        const departureDate = new Date(req.body.departure_date);
+
         const isPutRequest = req.method === "PUT";
-/*
+        
+        const isPastDate = (value: Date): boolean => {
+            const currentDate = new Date();            
+            return value <= currentDate;
+          };
+
+        const isLesser = (value: Date): boolean => {
+            return value <= arrivalDate;
+          };  
+
         const departure_date = z
-            .date()
-            .max(new Date());
+            .string()
+            .refine((value) => {                
+                return isLesser(departureDate);
+              }, {
+                message: "La fecha inicio no puede ser mayor a la fecha fin",
+              });
 
         const arrival_date = z
-            .date()
-            .min(new Date());
-  */     
+            .string()
+            .refine((value) => {
+                return isPastDate(arrivalDate);
+              }, {
+                message: "La fecha inicio no puede ser mayor a la fecha actual",
+              });
+       
         const cost = z
            .number()
            .positive({ message: "El costo debe ser un número positivo" });
@@ -45,13 +65,13 @@ const validatorTravel: ((
             .nonempty({ message: "La ubicación final no puede estar vacía" });
 
         const schema = z.object({
-         // departure_date: isPutRequest ? departure_date.optional() : departure_date,
-         // arrival_date: isPutRequest ? arrival_date.optional() : arrival_date,
+          departure_date: isPutRequest ? departure_date.optional() : departure_date,
+          arrival_date: isPutRequest ? arrival_date.optional() : arrival_date,
           cost: isPutRequest ? cost.optional() : cost,
           km: isPutRequest ? km.optional() : km,          
           starting_location: isPutRequest ? starting_location.optional() : starting_location,          
           final_location: isPutRequest ? final_location.optional() : final_location,          
-      //    equipment: isPutRequest ? equipmentSchema.optional() : equipmentSchema,  
+          equipment: isPutRequest ? equipmentSchema.optional() : equipmentSchema,  
         });
   
         const validatedData = schema.safeParse(req.body);
