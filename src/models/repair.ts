@@ -11,20 +11,12 @@ const RepairSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    date: {
-      type: Date,
-      required: true,
-    },
     equipment: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Equipment',
       required: true,
     },
     createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-    updatedAt: {
       type: Date,
       default: Date.now,
     },
