@@ -153,8 +153,8 @@ const updateTravelById = async (req: Request, res: Response) => {
 const deleteTravelById = async (req: Request, res: Response) => {
     try {
       const { travelId } = req.params;
-  
-      const deletedTravel = await Equipment.findByIdAndDelete(travelId);
+
+      const deletedTravel = await Travel.findByIdAndDelete(travelId);
   
       if (!deletedTravel) {
         return res.status(404).json({ message: "Viaje no encontrado" });
