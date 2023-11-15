@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { Request, Response, NextFunction } from "express";
+import { equipmentSchema } from "./schemas/equipment";
 
 const validatorEquipment: ((
   req: Request,
@@ -8,58 +8,16 @@ const validatorEquipment: ((
 ) => void)[] = [
   (req, res, next) => {
     try {
-      console.log(req.body)
       req.body = {
         description: req.body.description,        
-        until_date: req.body.until_date,        
         driver: req.body.driver,        
         batea: req.body.batea,        
         trailer: req.body.trailer,        
       }
 
       const isPutRequest = req.method === "PUT";
-
-      const description = z
-      .string()
-      .nonempty({ message: "La descripción no puede estar vacía" });
-
-//Estaria bueno reutilizar los otros validadores pero no se como hacerlo
-      const batea = z
-      .object({
-        patent: z
-          .string()
-          .regex(/^[A-Z0-9]{2,3}-?[A-Z0-9]{2,4}$/, {
-            message: "Formato de patente inválido",
-          }),
-      });
-
-      const trailer = z
-        .object({
-          patent: z
-            .string()
-            .regex(/^[A-Z0-9]{2,3}-?[A-Z0-9]{2,4}$/, {
-              message: "Formato de patente inválido",
-            }),
-        });
-
-      const driver = z
-        .object({
-          legajo: z
-            .string()
-            .refine((value) => {
-              const legajoNumber = parseFloat(value);
-              return !isNaN(legajoNumber) && legajoNumber > 0;
-            }, {
-              message: "El campo legajo debe ser un número mayor a 0",
-            }),
-        });
- 
-      const schema = z.object({
-        description: isPutRequest ? description.optional() : description,
-        batea: isPutRequest ? batea.optional() : batea,  
-        trailer: isPutRequest ? trailer.optional() : trailer,  
-        driver: isPutRequest ? driver.optional() : driver,  
-      });
+      
+      const schema = isPutRequest ? equipmentSchema.optional() : equipmentSchema;
 
       const validatedData = schema.safeParse(req.body);
 
