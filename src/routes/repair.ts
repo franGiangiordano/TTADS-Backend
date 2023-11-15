@@ -7,18 +7,18 @@ import {
   updateRepair,
   deleteRepair 
 } from "../controllers/repair"; 
-import validatorRepair from "../validators/repair";
+//import validatorRepair from "../validators/repair";
 import { verifyToken, isManager, isAdmin } from "../middlewares/authJwt.js";
 
 const router = Router();
 
 router.get("/",getRepairs);
 router.get("/:repairId", getRepairById);
-router.post("/", [verifyToken, isAdmin], validatorRepair, createRepair);
+router.post("/", [verifyToken, isAdmin], /*validatorRepair,*/ createRepair);
 router.put(
     "/:repairId",   
     [verifyToken, isAdmin], 
-    validatorRepair,
+    /*validatorRepair,*/
     updateRepair
   );
 router.delete(
