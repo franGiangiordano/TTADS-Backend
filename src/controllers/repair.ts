@@ -43,7 +43,7 @@ const getRepairs = async (req: Request, res: Response) => {
       .populate('equipment');
 
     return res.json({
-      data: repairs,
+      results: repairs,
       total: totalRepairs,
       startIndex: startIndex,
       totalPages: totalPages,
