@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 const createRepair = async (req: Request, res: Response) => {
   try {
     const { equipmentId } = req.params;
-    const { description, cost, date } = req.body;
+    const { description, cost } = req.body;
 
     const equipment = await Equipment.findById(equipmentId);
 
@@ -16,7 +16,6 @@ const createRepair = async (req: Request, res: Response) => {
     const repair = await Reparacion.create({
       description,
       cost,
-      date,
       equipment: equipmentId,
     });
 
@@ -73,11 +72,11 @@ const getRepairById = async (req: Request, res: Response) => {
   const updateRepair = async (req: Request, res: Response) => {
     try {
       const { repairId } = req.params;
-      const { description, cost, date } = req.body;
+      const { description, cost } = req.body;
   
       const updatedRepair = await Reparacion.findByIdAndUpdate(
         repairId,
-        { description, cost, date },
+        { description, cost },
         { new: true }
       );
   
