@@ -4,25 +4,27 @@ import { Request, Response } from 'express';
 
 const createRepair = async (req: Request, res: Response) => {
   try {
-    const { equipmentId } = req.params;
-    const { description, cost } = req.body;
-
-    const equipment = await Equipment.findById(equipmentId);
-
-    if (!equipment) {
-      return res.status(404).json({ message: 'Equipo no encontrado' });
+    const { description, cost, equipment } = req.body;
+    const equipmentFound = await Equipment.findOne({ _id: equipment });      
+    
+    if (!equipmentFound) {
+      return res.status(404).json({ message: "Equipo no encontrado" });
     }
 
     const repair = await Reparacion.create({
-      description,
-      cost,
-      equipment: equipmentId,
+      description:description,
+      cost:cost,
+      equipment: equipmentFound,
     });
-
-    return res.status(201).json(repair);
+    
+    return res.status(201).json(repair);      
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'No se pudo crear la reparación' });
+    if (typeof error === "object" && error !== null && "code" in error) {
+      if (error.code === 11000) {
+        return res.status(409).json({ message: "La Reparación ingresada ya existe" });
+      }
+    }
+    return res.status(500).json({ message: "No se pudo crear la Reparación" });
   }
 };
 
