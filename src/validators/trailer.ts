@@ -1,6 +1,5 @@
-// validatorTrailer.ts
-import { z } from "zod";
 import { Request, Response, NextFunction } from "express";
+import { trailerSchema } from "./schemas/trailer";
 
 const validatorTrailer = (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -9,22 +8,10 @@ const validatorTrailer = (req: Request, res: Response, next: NextFunction) => {
       type: req.body.type,
     };
 
-    const typeValidation = z
-      .string()
-      .regex(/^[A-Za-z\s]+$/, {
-        message: "El campo tipo debe contener solo letras",
-      })
-      .min(1);
-
     const isPutRequest = req.method === "PUT";
 
-    const schema = z.object({
-      type: isPutRequest ? typeValidation.optional() : typeValidation,
+    const schema = isPutRequest ? trailerSchema.optional() : trailerSchema;
 
-      patent: z.string().regex(/^[A-Z0-9]{2,3}-?[A-Z0-9]{2,4}$/, {
-        message: "Formato de patente inválido",
-      }),
-    });
     const validatedData = schema.safeParse(req.body);
 
     if (validatedData.success) {

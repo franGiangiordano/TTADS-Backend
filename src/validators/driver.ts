@@ -1,6 +1,5 @@
-// validatorDriver.ts
-import { z } from "zod";
 import { Request, Response, NextFunction } from "express";
+import { driverSchema } from "./schemas/driver";
 
 const validatorDriver = (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -12,42 +11,14 @@ const validatorDriver = (req: Request, res: Response, next: NextFunction) => {
 
     const isPutRequest = req.method === "PUT";
 
-    const legValidation = z
-      .string()
-      .refine((value) => {
-        const legajoNumber = parseFloat(value);
-        return !isNaN(legajoNumber) && legajoNumber > 0;
-      }, {
-        message: "El campo legajo debe ser un número mayor a 0",
-      });
-
-    const nameValidation = z
-      .string()
-      .regex(/^[A-Za-z\s]+$/, {
-        message: "El campo nombre debe contener solo letras",
-      })
-      .min(1);
-
-    const surnameValidation = z
-      .string()
-      .regex(/^[A-Za-z\s]+$/, {
-        message: " El campo apellido debe contener solo letras",
-      })
-      .min(1);
-
-    const schema = z.object({
-      legajo: isPutRequest ? legValidation.optional() : legValidation,
-      name: isPutRequest ? nameValidation.optional() : nameValidation,
-      surname: isPutRequest
-        ? surnameValidation.optional()
-        : surnameValidation,
-    });
+    const schema = isPutRequest ? driverSchema.optional() : driverSchema;
 
     const validatedData = schema.safeParse(req.body);
 
     if (validatedData.success) {
       next();
     } else {
+      console.log(validatedData.error.formErrors.fieldErrors)
       return res
         .status(400)
         .json({ message: validatedData.error.formErrors.fieldErrors });
