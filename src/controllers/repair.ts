@@ -1,6 +1,8 @@
 import Reparacion from '../models/repair';
 import Equipment from '../models/equipment';
 import { Request, Response } from 'express';
+import Repair from '../models/repair';
+import { EntityListResponse } from "../models/entity.list.response.model";
 
 const createRepair = async (req: Request, res: Response) => {
   try {
@@ -34,51 +36,93 @@ const getRepairs = async (req: Request, res: Response) => {
     const perPage = parseInt(req.query.limit as string) || 10;
 
     const search = req.query.search as string || '';
-    const searchOptions = { description: { $regex: search, $options: 'i' } };
+      const query: any = {};
 
-    const totalRepairs = await Reparacion.countDocuments(search !== '' ? searchOptions : {});
-    const totalPages = Math.ceil(totalRepairs / perPage);
-    const startIndex = (page - 1) * perPage;
-
-    const repairs = await Reparacion.find(search !== '' ? searchOptions : {})
-      .populate('equipment');
-
-    return res.json({
-      results: repairs,
-      total: totalRepairs,
-      startIndex: startIndex,
-      totalPages: totalPages,
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'No se pudo obtener las reparaciones' });
-  }
-};
-
-const getRepairById = async (req: Request, res: Response) => {
-    try {
-      const { repairId } = req.params;
-      const repair = await Reparacion.findById(repairId).populate('equipment');
-  
-      if (!repair) {
-        return res.status(404).json({ message: 'Reparación no encontrada' });
+      if (search) {
+        query.$or = [
+          { description: { $regex: search, $options: 'i' } }, 
+        ];
       }
   
-      return res.status(200).json(repair);
+      const totalRepairs = await Repair.countDocuments(query);
+      const totalPages = Math.ceil(totalRepairs / perPage);
+      const startIndex = (page - 1) * perPage;
+      
+      const repairs = await Repair.find(query).populate({
+        path: 'equipment',
+        populate: [{
+          path: 'batea',
+          model: 'Batea',  
+        },
+        {
+          path: 'driver',
+          model: 'Driver',  
+          select: 'legajo name surname', 
+        },
+        {
+            path: 'trailer',
+            model: 'Trailer',  
+            select: 'patent type', 
+        }
+        ]
+      });
+  
+      return res.json(
+        new EntityListResponse(repairs, totalRepairs, startIndex, totalPages)
+      );
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'No se pudo obtener la reparación' });
+      return res.status(500).json({ message: "No se pudo obtener las reparaciones" });
     }
-  };
+}
+
+const getRepairById = async (req: Request, res: Response) => {
+  try {
+    const { repairId } = req.params;
+    const repair = await Repair.findById(repairId).populate({
+      path: 'equipment',
+      populate: [{
+        path: 'batea',
+        model: 'Batea',  
+      },
+      {
+        path: 'driver',
+        model: 'Driver',  
+        select: 'legajo name surname', 
+      },
+      {
+          path: 'trailer',
+          model: 'Trailer',  
+          select: 'patent type', 
+      }
+      ]
+    });
+
+    if (!repair) {
+      return res.status(404).json({ message: "Reparación no encontrada" });
+    }
+
+    return res.status(200).json(repair);
+  } catch (error) {
+    return res.status(500).json({ message: "No se pudo obtener la Reparación" });
+  }
+};
 
   const updateRepair = async (req: Request, res: Response) => {
     try {
       const { repairId } = req.params;
-      const { description, cost } = req.body;
+      const { description, cost, equipment } = req.body;
+
+      const equipmentFound = await Equipment.findOne({ _id: equipment });
+
+      if (!equipmentFound) {
+        return res.status(404).json({ message: "Equipo no encontrado" });
+      }
   
-      const updatedRepair = await Reparacion.findByIdAndUpdate(
-        repairId,
-        { description, cost },
+      const updatedRepair = await Reparacion.findByIdAndUpdate(repairId, { 
+        description: description,
+        cost: cost,
+        equipment: equipmentFound,
+      },
         { new: true }
       );
   
@@ -88,10 +132,15 @@ const getRepairById = async (req: Request, res: Response) => {
   
       return res.status(200).json(updatedRepair);
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'No se pudo actualizar la reparación' });
+      if (typeof error === "object" && error !== null && "code" in error) {
+        if (error.code === 11000) {
+          return res.status(409).json({ message: "La Reparación ya existe" });
+        }
+      }
+      console.log(error);
+      return res.status(500).json({ message: "No se pudo actualizar la Reparación" });
     }
-  };
+};
 
   const deleteRepair = async (req: Request, res: Response) => {
     try {
