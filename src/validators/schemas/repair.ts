@@ -6,8 +6,10 @@ const description = z
   .nonempty({ message: "La descripción no puede estar vacía" });
 
 const cost = z
-  .number()
-  .positive({ message: "El costo debe ser un número positivo" });
+  .string()
+  .refine(value => /^\$?\d+(\.\d{1,2})?$/.test(value), {
+    message: "El campo de costo debe ser un número válido"
+  });
 
 export const repairSchema = z.object({
   description: description,
