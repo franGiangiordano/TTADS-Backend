@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Trailer from "../models/trailer";
 import Equipment from "../models/equipment";
+import { EntityListResponse } from "../models/entity.list.response.model";
 
 const getTrailers = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
@@ -19,7 +20,9 @@ const getTrailers = async (req: Request, res: Response) => {
     const totalPages = Math.ceil(totalTrailers / perPage);
     const startIndex = (page - 1) * perPage;
     const results = await Trailer.find(search != '' ? searchOptions : {}).skip(startIndex).limit(perPage);
-    return res.json({ results, totalPages, currentPage: page, totalTrailers });
+    return res.json(
+      new EntityListResponse(results, totalTrailers, page, totalPages)
+    );
   } catch (error) {
     return res
       .status(500)
