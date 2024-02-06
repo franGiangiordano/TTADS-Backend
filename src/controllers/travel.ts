@@ -5,7 +5,7 @@ import { EntityListResponse } from "../models/entity.list.response.model";
 
 const createTravel = async (req: Request, res: Response) => {
     try {
-      const { departure_date, arrival_date, cost, km, starting_location, final_location, equipment } = req.body;
+      const { departure_date, arrival_date, cost, km, starting_location, final_location, equipment, destination_description } = req.body;
       const equipmentFound = await Equipment.findOne({ _id: equipment });      
       
       
@@ -21,6 +21,7 @@ const createTravel = async (req: Request, res: Response) => {
         starting_location: starting_location,
         final_location: final_location,
         equipment: equipmentFound,
+        destination_description: destination_description
       });
       
       return res.status(201).json(travelSaved);      
@@ -46,7 +47,8 @@ const getTravels = async (req: Request, res: Response) => {
       if (search) {
         query.$or = [
           { starting_location: { $regex: search, $options: 'i' } },
-          { final_location: { $regex: search, $options: 'i' } },       
+          { final_location: { $regex: search, $options: 'i' } },   
+          { destination_description: { $regex: search, $options: 'i' } },    
         ];
       }
   
@@ -72,7 +74,6 @@ const getTravels = async (req: Request, res: Response) => {
         }
         ]
       });
-  
       return res.json(
         new EntityListResponse(travels, totalTravels, startIndex, totalPages)
       );
@@ -116,7 +117,7 @@ const getTravelById = async (req: Request, res: Response) => {
 const updateTravelById = async (req: Request, res: Response) => {
     try {
       const { travelId } = req.params;
-      const { departure_date, arrival_date, cost, km, starting_location, final_location, equipment } = req.body;
+      const { departure_date, arrival_date, cost, km, starting_location, final_location, equipment, destination_description } = req.body;
 
       const equipmentFound = await Equipment.findOne({ _id: equipment });
   
@@ -132,6 +133,7 @@ const updateTravelById = async (req: Request, res: Response) => {
         starting_location: starting_location,
         final_location: final_location,
         equipment: equipmentFound,
+        destination_description: destination_description
       }, { new: true });
   
       if (!updatedTravel) {

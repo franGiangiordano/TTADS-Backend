@@ -26,6 +26,9 @@ const TravelSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        destination_description: {
+            type: String, 
+        },
         equipment:{
             type: mongoose.Schema.Types.ObjectId,
             ref: "Equipment",

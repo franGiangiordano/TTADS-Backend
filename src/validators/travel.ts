@@ -12,6 +12,7 @@ const validatorTravel: ((
         req.body = {
           departure_date: req.body.departure_date,        
           arrival_date: req.body.arrival_date,        
+          destination_description: req.body.destination_description,
           cost: req.body.cost,        
           km: req.body.km,        
           starting_location: req.body.starting_location,        
@@ -64,9 +65,14 @@ const validatorTravel: ((
             .string()
             .nonempty({ message: "La ubicación final no puede estar vacía" });
 
+        const destinacion_description = z
+            .string()
+            .nonempty({ message: "La descripción de la ubicación no puede estar vacía" });    
+
         const schema = z.object({
           departure_date: isPutRequest ? departure_date.optional() : departure_date,
           arrival_date: isPutRequest ? arrival_date.optional() : arrival_date,
+          destination_description: destinacion_description.optional(),
           cost: isPutRequest ? cost.optional() : cost,
           km: isPutRequest ? km.optional() : km,          
           starting_location: isPutRequest ? starting_location.optional() : starting_location,          
