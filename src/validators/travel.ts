@@ -7,7 +7,7 @@ const validatorTravel: ((
     res: Response,
     next: NextFunction
   ) => void)[] = [
-    (req, res, next) => {
+    (req, res, next) => {      
       try {
         req.body = {
           departure_date: req.body.departure_date,        
@@ -45,7 +45,7 @@ const validatorTravel: ((
             .refine((value) => {
                 return isPastDate(arrivalDate);
               }, {
-                message: "La fecha inicio no puede ser mayor a la fecha actual",
+                message: "La fecha de llegada no puede ser mayor a la fecha actual",
               });
        
         const cost = z
