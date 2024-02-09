@@ -134,6 +134,18 @@ const updateTravelById = async (req: Request, res: Response) => {
       if (!equipmentFound) {
         return res.status(404).json({ message: "Equipo no encontrado" });
       }
+
+      //Validar que departure_date y arrival_date no se superpongan con un otro viaje de ese equipo
+      const existingTravel = await Travel.findOne({
+        _id: { $ne: travelId },
+        equipment: equipmentFound._id,
+        departure_date: { $lte: arrival_date },
+        arrival_date: { $gte: departure_date },
+      });
+  
+      if (existingTravel) {
+        return res.status(409).json({ message: "El chofer ya tiene un viaje en esa fecha" });
+      }
       
       const updatedTravel = await Travel.findByIdAndUpdate(travelId, {
         departure_date: departure_date,
