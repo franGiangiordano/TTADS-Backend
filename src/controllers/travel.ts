@@ -135,7 +135,6 @@ const updateTravelById = async (req: Request, res: Response) => {
         return res.status(404).json({ message: "Equipo no encontrado" });
       }
 
-      //Validar que departure_date y arrival_date no se superpongan con un otro viaje de ese equipo
       const existingTravel = await Travel.findOne({
         _id: { $ne: travelId },
         equipment: equipmentFound._id,
