@@ -13,6 +13,16 @@ const createTravel = async (req: Request, res: Response) => {
         return res.status(404).json({ message: "Equipo no encontrado" });
       }
 
+      const existingTravel = await Travel.findOne({
+        departure_date: { $lte: arrival_date },
+        arrival_date: { $gte: departure_date },
+        equipment: equipmentFound._id,
+      });
+
+      if (existingTravel) {
+        return res.status(409).json({ message: "El chofer ya tiene un viaje en esa fecha" });
+      }
+
       const travelSaved = await Travel.create({
         departure_date: departure_date,
         arrival_date:arrival_date,
