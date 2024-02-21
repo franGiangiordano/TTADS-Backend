@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Travel from "../models/travel";
 import Equipment from "../models/equipment";
+import Repair from "../models/repair";
 import { EntityListResponse } from "../models/entity.list.response.model";
 
 const createTravel = async (req: Request, res: Response) => {
@@ -23,6 +24,18 @@ const createTravel = async (req: Request, res: Response) => {
         return res.status(409).json({ message: "El chofer ya tiene un viaje en esa fecha" });
       }
 
+      const existingRepair = await Repair.findOne({
+        equipment: equipmentFound._id,
+        createdAt: {
+          $gte: new Date(departure_date).setHours(0, 0, 0, 0),
+          $lte: new Date(arrival_date).setHours(23, 59, 59, 999)
+        }
+      })
+
+      if (existingRepair) {
+        return res.status(409).json({ message: "El equipo tiene una reparacion programada para esa fecha" });
+      }
+
       const travelSaved = await Travel.create({
         departure_date: departure_date,
         arrival_date:arrival_date,
@@ -36,6 +49,7 @@ const createTravel = async (req: Request, res: Response) => {
       
       return res.status(201).json(travelSaved);      
     } catch (error) {
+      console.log(error);
       if (typeof error === "object" && error !== null && "code" in error) {
         if (error.code === 11000) {
           return res.status(409).json({ message: "El viaje ingresado ya existe" });
