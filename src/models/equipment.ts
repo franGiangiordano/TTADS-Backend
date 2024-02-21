@@ -36,6 +36,8 @@ const EquipmentSchema = new mongoose.Schema(
     }
 )
 
+EquipmentSchema.index({ description: 1 }, { unique: true });
+
 EquipmentSchema.index(
     { driver: 1, batea: 1, trailer: 1 },
     { unique: true }
