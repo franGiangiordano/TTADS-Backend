@@ -3,6 +3,7 @@ import Equipment from '../models/equipment';
 import { Request, Response } from 'express';
 import Repair from '../models/repair';
 import { EntityListResponse } from "../models/entity.list.response.model";
+import Travel from '../models/travel';
 
 const createRepair = async (req: Request, res: Response) => {
   try {
@@ -11,6 +12,17 @@ const createRepair = async (req: Request, res: Response) => {
     
     if (!equipmentFound) {
       return res.status(404).json({ message: "Equipo no encontrado" });
+    }
+    const currentDate = new Date().setHours(0, 0, 0, 0);  
+    
+    const existingTravel = await Travel.findOne({      
+        equipment: equipmentFound._id ,
+        departure_date: { $lte: currentDate } ,
+        arrival_date: { $gte: currentDate } 
+    });
+
+    if (existingTravel) {
+      return res.status(409).json({ message: "No es posible ingresar la reparacion porque el equipo se encuentra en un viaje" });
     }
 
     const repair = await Reparacion.create({
