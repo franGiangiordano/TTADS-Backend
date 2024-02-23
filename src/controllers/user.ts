@@ -124,4 +124,39 @@ const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
-export { getUsers, getUser, createUser, updateUser, deleteUser };
+const changePasswords = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { password, newPassword } = req.body;
+    const newHash = await User.encryptPassword(newPassword);
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "No se encontro el usuario" });
+    }
+
+    if (password === newPassword) {
+      return res.status(400).json({ message: "La nueva contraseña no puede ser igual a la anterior" });
+    }
+
+    const matchPassword = User.comparePassword(
+      req.body.password,
+      user.password
+    );
+
+    if(!matchPassword) {
+      return res.status(401).json({ message: "Contraseña incorrecta" });
+    }
+
+    user.password = newHash;
+    await user.save();
+    return res.status(200).json({ message: "Se cambio la contraseña correctamente" });  
+  } catch (error) {
+    return res.status(500).json({ message: "Ocurrio un error al cambiar la contraseña" });
+   } 
+
+   
+};
+
+export { getUsers, getUser, createUser, updateUser, deleteUser, changePasswords };

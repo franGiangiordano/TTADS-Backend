@@ -12,7 +12,8 @@ const validatorUser: ((
       req.body = {
         name: req.body.name,        
         email: req.body.email,        
-        password: req.body.password,  
+        password: req.body.password, 
+        newPassword: req.body.newPassword, 
         roles: req.body.roles      
       }
 
@@ -39,6 +40,7 @@ const validatorUser: ((
         name: nameOptional ? nameValidation.optional() : nameValidation,
         email: isPutRequest ? emailValidation.optional() : emailValidation,
         password: isPutRequest ? passValidation.optional() : passValidation,
+        newPassword: passValidation.optional(),
       });
 
       const validatedData = schema.safeParse(req.body);
