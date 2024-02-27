@@ -1,5 +1,9 @@
 import { Messages } from "../src/constants/messages.constant";
-import { createBatea, deletebateaById } from "../src/controllers/batea";
+import {
+  createBatea,
+  deletebateaById,
+  updatebateaById,
+} from "../src/controllers/batea";
 import { EntityListResponse } from "../src/models/entity.list.response.model";
 
 const { getBateas } = require("../src/controllers/batea");
@@ -29,6 +33,7 @@ jest.mock("../src/models/batea", () => ({
   find: jest.fn(),
   findByIdAndDelete: jest.fn(),
   create: jest.fn(),
+  findByIdAndUpdate: jest.fn(),
 }));
 
 jest.mock("../src/models/equipment", () => ({
@@ -164,6 +169,41 @@ describe("getBateas", () => {
     Batea.create.mockRejectedValueOnce({ code: 11000 });
 
     await createBatea(req, res);
+    expect(res.status).toHaveBeenCalledWith(409);
+  });
+
+  it('it should update batea with id "1" and return 200', async () => {
+    const req = { body: { patent: "1234" }, params: { bateaId: "1" } };
+    const res = { json: jest.fn(), status: jest.fn() };
+
+    res.status.mockReturnValue(res);
+    const bateasMockUpdated = { ...bateasMock, ...req.body };
+    Batea.findByIdAndUpdate.mockResolvedValueOnce(bateasMockUpdated);
+
+    await updatebateaById(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(bateasMockUpdated);
+  });
+
+  it('it should return 404 when batea with id "2" not found', async () => {
+    const req = { body: { patent: "1234" }, params: { bateaId: "2" } };
+    const res = { json: jest.fn(), status: jest.fn() };
+
+    res.status.mockReturnValue(res);
+    Batea.findByIdAndUpdate.mockResolvedValueOnce();
+
+    await updatebateaById(req, res);
+    expect(res.status).toHaveBeenCalledWith(404);
+  });
+
+  it('should return 409 when batea with patent "1234" already exists', async () => {
+    const req = { body: { patent: "1234" }, params: { bateaId: "1" } };
+    const res = { json: jest.fn(), status: jest.fn() };
+
+    res.status.mockReturnValue(res);
+    Batea.findByIdAndUpdate.mockRejectedValueOnce({ code: 11000 });
+
+    await updatebateaById(req, res);
     expect(res.status).toHaveBeenCalledWith(409);
   });
 });

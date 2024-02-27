@@ -63,7 +63,7 @@ const getBateas = async (req: Request, res: Response) => {
   }
 };
 
-const updatebateaById = async (req: Request, res: Response) => {
+const updatebateaById = async (req: any, res: any) => {
   try {
     const updatedbatea = await Batea.findByIdAndUpdate(
       req.params.bateaId,
