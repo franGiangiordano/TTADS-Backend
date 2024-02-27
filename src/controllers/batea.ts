@@ -87,17 +87,15 @@ const updatebateaById = async (req: Request, res: Response) => {
   }
 };
 
-const deletebateaById = async (req: Request, res: Response) => {
+const deletebateaById = async (req: any, res: any) => {
   const { bateaId } = req.params;
 
   try {
     const equipment = await Equipment.findOne({ batea: bateaId });
     if (equipment) {
-      return res
-        .status(400)
-        .json({
-          message: "La batea forma parte de un equipo, no se puede eliminar",
-        });
+      return res.status(400).json({
+        message: "La batea forma parte de un equipo, no se puede eliminar",
+      });
     }
 
     const result = await Batea.findByIdAndDelete(bateaId);

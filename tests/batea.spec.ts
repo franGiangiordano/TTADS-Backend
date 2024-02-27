@@ -1,9 +1,11 @@
 import { Messages } from "../src/constants/messages.constant";
+import { deletebateaById } from "../src/controllers/batea";
 import { EntityListResponse } from "../src/models/entity.list.response.model";
 
 const { getBateas } = require("../src/controllers/batea");
 
 const Batea = require("../src/models/batea");
+const Equipment = require("../src/models/equipment");
 
 const bateasMock = [
   {
@@ -11,9 +13,25 @@ const bateasMock = [
   },
 ];
 
+const EquipmentMock = [
+  {
+    description: "descriptionTest",
+    driver: "1",
+    batea: "2",
+    trailer: "3",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+
 jest.mock("../src/models/batea", () => ({
   countDocuments: jest.fn(),
   find: jest.fn(),
+  findByIdAndDelete: jest.fn(),
+}));
+
+jest.mock("../src/models/equipment", () => ({
+  findOne: jest.fn(),
 }));
 
 describe("getBateas", () => {
@@ -29,15 +47,17 @@ describe("getBateas", () => {
     Batea.countDocuments.mockResolvedValueOnce(bateasCount);
     Batea.find.mockReturnValueOnce({
       skip: jest.fn().mockReturnThis(),
-      limit: jest.fn().mockResolvedValue(bateasMock)
+      limit: jest.fn().mockResolvedValue(bateasMock),
     });
 
     await getBateas(req, res);
 
-    expect(res.json).toHaveBeenCalledWith(new EntityListResponse(bateasMock, bateasCount, 0, 2));
+    expect(res.json).toHaveBeenCalledWith(
+      new EntityListResponse(bateasMock, bateasCount, 0, 2)
+    );
   });
 
-  it('should get bateas with custom parameters', async () => {
+  it("should get bateas with custom parameters", async () => {
     const req = { query: { page: 3, limit: 2, search: "SearchTest" } };
     const res = { json: jest.fn() };
     const bateasCount = 20;
@@ -48,28 +68,28 @@ describe("getBateas", () => {
       if (searchOptions.patent.$regex == req.query.search)
         return {
           skip: jest.fn(function (startIndex) {
-            if (startIndex == startIndexExpected)
-              return this;
+            if (startIndex == startIndexExpected) return this;
           }),
           limit: jest.fn().mockImplementation((limitPerPage) => {
-            if (limitPerPage == req.query.limit)
-              return bateasMock
-          })
-        }
+            if (limitPerPage == req.query.limit) return bateasMock;
+          }),
+        };
     });
 
     await getBateas(req, res);
 
-    expect(res.json).toHaveBeenCalledWith(new EntityListResponse(bateasMock, bateasCount, startIndexExpected, 10));
+    expect(res.json).toHaveBeenCalledWith(
+      new EntityListResponse(bateasMock, bateasCount, startIndexExpected, 10)
+    );
   });
 
-  it('should return 500 with correct message when error', async () => {
+  it("should return 500 with correct message when error", async () => {
     const req = { query: { page: 3, limit: 2, search: "SearchTest" } };
     const res = { json: jest.fn(), status: jest.fn() };
     const bateasCount = 20;
 
     Batea.find.mockImplementation(() => {
-      throw new Error;
+      throw new Error();
     });
 
     res.status.mockReturnValue(res);
@@ -78,5 +98,48 @@ describe("getBateas", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({ message: Messages.CannotGetBatea });
+  });
+
+  it("should delete batea", async () => {
+    const req = { params: { bateaId: "1" } };
+    const res = { json: jest.fn(), status: jest.fn() };
+
+    Equipment.findOne.mockReturnValueOnce(undefined);
+
+    res.status.mockReturnValue(res);
+
+    Batea.findByIdAndDelete.mockResolvedValueOnce(req.params.bateaId);
+    await deletebateaById(req, res);
+    expect(res.status).toHaveBeenCalledWith(204);
+  });
+
+  it("should return 404 with correct message when batea not found", async () => {
+    const req = { params: { bateaId: "2" } };
+    const res = { json: jest.fn(), status: jest.fn() };
+
+    Equipment.findOne.mockReturnValueOnce(undefined);
+    res.status.mockReturnValue(res);
+
+    Batea.findByIdAndDelete.mockResolvedValueOnce();
+
+    await deletebateaById(req, res);
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({
+      message: Messages.CannotDeleteBatea,
+    });
+  });
+
+  it("should return 400 with correct message when batea is part of an equipment", async () => {
+    const req = { params: { bateaId: "1" } };
+    const res = { json: jest.fn(), status: jest.fn() };
+
+    Equipment.findOne.mockReturnValueOnce(req.params.bateaId);
+    res.status.mockReturnValue(res);
+
+    await deletebateaById(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      message: Messages.FKViolationBatea,
+    });
   });
 });
