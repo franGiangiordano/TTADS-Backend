@@ -19,7 +19,7 @@ const createBatea = async (req: any, res: any) => {
   }
 };
 
-const getBateaById = async (req: Request, res: Response) => {
+const getBateaById = async (req: any, res: any) => {
   const { bateaId } = req.params;
 
   try {

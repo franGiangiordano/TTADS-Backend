@@ -2,6 +2,7 @@ import { Messages } from "../src/constants/messages.constant";
 import {
   createBatea,
   deletebateaById,
+  getBateaById,
   updatebateaById,
 } from "../src/controllers/batea";
 import { EntityListResponse } from "../src/models/entity.list.response.model";
@@ -31,6 +32,7 @@ const EquipmentMock = [
 jest.mock("../src/models/batea", () => ({
   countDocuments: jest.fn(),
   find: jest.fn(),
+  findById: jest.fn(),
   findByIdAndDelete: jest.fn(),
   create: jest.fn(),
   findByIdAndUpdate: jest.fn(),
@@ -205,5 +207,28 @@ describe("getBateas", () => {
 
     await updatebateaById(req, res);
     expect(res.status).toHaveBeenCalledWith(409);
+  });
+
+  it('should return batea with id "1" and return 200', async () => {
+    const req = { params: { bateaId: "1" } };
+    const res = { json: jest.fn(), status: jest.fn() };
+
+    res.status.mockReturnValue(res);
+    Batea.findById.mockResolvedValueOnce(bateasMock);
+
+    await getBateaById(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(bateasMock);
+  });
+
+  it('should return 404 when batea with id "2" not found', async () => {
+    const req = { params: { bateaId: "2" } };
+    const res = { json: jest.fn(), status: jest.fn() };
+
+    res.status.mockReturnValue(res);
+    Batea.findById.mockResolvedValueOnce();
+
+    await getBateaById(req, res);
+    expect(res.status).toHaveBeenCalledWith(404);
   });
 });
