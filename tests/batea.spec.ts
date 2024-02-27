@@ -1,26 +1,36 @@
-import request from "supertest";
-import app from "../src/app";
+import { EntityListResponse } from "../src/models/entity.list.response.model";
 
-describe("GET /batea", () => {
-  it("should respond with 200", (done) => {
-    request(app)
-      .get("/api/batea")
-      .set("Content-Type", "application/json")
-      .expect("Content-Type", /json/)
-      .expect(200, done);
-  });
-  /*
-  it("should respond with an object", async () => {
-    const response = await request(app).get("/api/batea").send();
-    expect(response.body).toBeInstanceOf(Object);
-  });
-});
+const { getBateas } = require("../src/controllers/batea");
 
-describe("POST /batea", () => {
-  it("should respond with 201", async () => {
-    const response = await request(app).post("/api/batea").send({
-      patent: "ABC123",
+const Batea = require('../src/models/batea');
+
+const bateasMock = [{
+  patente: "AAA"
+}];
+
+jest.mock('../src/models/batea', () => ({
+  countDocuments: jest.fn(),
+  find: jest.fn(),
+}));
+
+describe('getBateas', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should get bateas with default parameters', async () => {
+    const req = { query: {} };
+    const res = { json: jest.fn() };
+    const bateasCount = 20;
+
+    Batea.countDocuments.mockResolvedValueOnce(bateasCount);
+    Batea.find.mockReturnValueOnce({
+      skip: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockResolvedValue(bateasMock)
     });
-    expect(response.statusCode).toBe(201);
-  });*/
+
+    await getBateas(req, res);
+
+    expect(res.json).toHaveBeenCalledWith(new EntityListResponse(bateasMock, bateasCount, 0, 2));
+  });
 });
