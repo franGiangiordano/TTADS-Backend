@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Batea from "../models/batea";
 import Equipment from "../models/equipment";
 import { EntityListResponse } from "../models/entity.list.response.model";
+import { Messages } from "../constants/messages.constant";
 
 const createBatea = async (req: Request, res: Response) => {
   try {
@@ -58,7 +59,7 @@ const getBateas = async (req: Request, res: Response) => {
     );
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "No se obtuvo la lista de bateas" });
+    return res.status(500).json({ message: Messages.CannotGetBatea });
   }
 };
 
