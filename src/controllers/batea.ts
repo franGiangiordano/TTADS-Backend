@@ -4,7 +4,7 @@ import Equipment from "../models/equipment";
 import { EntityListResponse } from "../models/entity.list.response.model";
 import { Messages } from "../constants/messages.constant";
 
-const createBatea = async (req: Request, res: Response) => {
+const createBatea = async (req: any, res: any) => {
   try {
     const bateaSaved = await Batea.create(req.body);
     return res.status(201).json(bateaSaved);

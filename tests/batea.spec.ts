@@ -1,5 +1,5 @@
 import { Messages } from "../src/constants/messages.constant";
-import { deletebateaById } from "../src/controllers/batea";
+import { createBatea, deletebateaById } from "../src/controllers/batea";
 import { EntityListResponse } from "../src/models/entity.list.response.model";
 
 const { getBateas } = require("../src/controllers/batea");
@@ -28,6 +28,7 @@ jest.mock("../src/models/batea", () => ({
   countDocuments: jest.fn(),
   find: jest.fn(),
   findByIdAndDelete: jest.fn(),
+  create: jest.fn(),
 }));
 
 jest.mock("../src/models/equipment", () => ({
@@ -141,5 +142,28 @@ describe("getBateas", () => {
     expect(res.json).toHaveBeenCalledWith({
       message: Messages.FKViolationBatea,
     });
+  });
+
+  it("shuld create a batea and return 201", async () => {
+    const req = { body: bateasMock };
+    const res = { json: jest.fn(), status: jest.fn() };
+
+    res.status.mockReturnValue(res);
+    Batea.create.mockResolvedValueOnce(bateasMock);
+
+    await createBatea(req, res);
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith(bateasMock);
+  });
+
+  it("shuld return 409 when batea already exists", async () => {
+    const req = { body: bateasMock };
+    const res = { json: jest.fn(), status: jest.fn() };
+
+    res.status.mockReturnValue(res);
+    Batea.create.mockRejectedValueOnce({ code: 11000 });
+
+    await createBatea(req, res);
+    expect(res.status).toHaveBeenCalledWith(409);
   });
 });
