@@ -9,8 +9,13 @@ const cost = z
   .number()
   .positive({ message: "El costo debe ser un número positivo" });
 
+const km = z
+  .number()
+  .positive({ message: "El km debe ser un número positivo" });
+
 export const repairSchema = z.object({
   description: description,
   cost: cost,
+  km: km,
   equipment: equipmentSchema,
 });

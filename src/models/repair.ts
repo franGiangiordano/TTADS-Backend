@@ -1,5 +1,4 @@
-
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const RepairSchema = new mongoose.Schema(
   {
@@ -13,12 +12,16 @@ const RepairSchema = new mongoose.Schema(
     },
     equipment: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Equipment',
+      ref: "Equipment",
       required: true,
     },
     createdAt: {
       type: Date,
       default: Date.now,
+    },
+    km: {
+      type: Number,
+      required: true,
     },
   },
   {
@@ -27,6 +30,6 @@ const RepairSchema = new mongoose.Schema(
   }
 );
 
-const Repair = mongoose.model('Repair', RepairSchema);
+const Repair = mongoose.model("Repair", RepairSchema);
 
 export default Repair;

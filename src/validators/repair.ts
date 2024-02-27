@@ -12,6 +12,7 @@ const validatorRepair: ((
         description: req.body.description,
         cost: req.body.cost,
         equipment: req.body.equipment,
+        km: req.body.km,
       };
 
       const isPutRequest = req.method === "PUT";
