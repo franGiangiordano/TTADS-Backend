@@ -23,12 +23,10 @@ const createRepair = async (req: Request, res: Response) => {
     });
 
     if (existingTravel) {
-      return res
-        .status(409)
-        .json({
-          message:
-            "No es posible ingresar la reparacion porque el equipo se encuentra en un viaje",
-        });
+      return res.status(409).json({
+        message:
+          "No es posible ingresar la reparacion porque el equipo se encuentra en un viaje",
+      });
     }
 
     const repair = await Reparacion.create({
@@ -67,25 +65,28 @@ const getRepairs = async (req: Request, res: Response) => {
     const totalPages = Math.ceil(totalRepairs / perPage);
     const startIndex = (page - 1) * perPage;
 
-    const repairs = await Repair.find(query).populate({
-      path: "equipment",
-      populate: [
-        {
-          path: "batea",
-          model: "Batea",
-        },
-        {
-          path: "driver",
-          model: "Driver",
-          select: "legajo name surname",
-        },
-        {
-          path: "trailer",
-          model: "Trailer",
-          select: "patent type",
-        },
-      ],
-    });
+    const repairs = await Repair.find(query)
+      .populate({
+        path: "equipment",
+        populate: [
+          {
+            path: "batea",
+            model: "Batea",
+          },
+          {
+            path: "driver",
+            model: "Driver",
+            select: "legajo name surname",
+          },
+          {
+            path: "trailer",
+            model: "Trailer",
+            select: "patent type",
+          },
+        ],
+      })
+      .skip(startIndex)
+      .limit(perPage);
 
     return res.json(
       new EntityListResponse(repairs, totalRepairs, startIndex, totalPages)
