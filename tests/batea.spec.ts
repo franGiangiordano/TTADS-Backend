@@ -133,7 +133,7 @@ describe("getBateas", () => {
     await deletebateaById(req, res);
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({
-      message: Messages.CannotDeleteBatea,
+      message: Messages.CannotFindBatea,
     });
   });
 
