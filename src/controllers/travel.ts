@@ -76,7 +76,7 @@ const createTravel = async (req: Request, res: Response) => {
 
 const postSearchTravels = async (req: Request, res: Response) => {
   try {
-    const { driver: driverFilterList, batea: bateaFilterList, trailer: trailerFilterList } = req.body;
+    const { driverFilterList, bateaFilterList, trailerFilterList } = req.body;
     const page = parseInt(req.query.page as string) || 1;
     const perPage = parseInt(req.query.limit as string) || 10;
 
