@@ -74,12 +74,13 @@ const createTravel = async (req: Request, res: Response) => {
   }
 };
 
-const getTravels = async (req: Request, res: Response) => {
+const postSearchTravels = async (req: Request, res: Response) => {
   try {
+    const { driver: driverFilterList, batea: bateaFilterList, trailer: trailerFilterList } = req.body;
     const page = parseInt(req.query.page as string) || 1;
     const perPage = parseInt(req.query.limit as string) || 10;
 
-    const search = (req.query.search as string) || "";
+    const search = req.query.search as string || "";
     const query: any = {};
 
     if (search) {
@@ -94,28 +95,105 @@ const getTravels = async (req: Request, res: Response) => {
     const totalPages = Math.ceil(totalTravels / perPage);
     const startIndex = (page - 1) * perPage;
 
-    const travels = await Travel.find(query)
-      .populate({
-        path: "equipment",
-        populate: [
-          {
-            path: "batea",
-            model: "Batea",
-          },
-          {
-            path: "driver",
-            model: "Driver",
-            select: "legajo name surname",
-          },
-          {
-            path: "trailer",
-            model: "Trailer",
-            select: "patent type",
-          },
-        ],
-      })
-      .skip(startIndex)
-      .limit(perPage);
+    const pipeline = [];
+
+    pipeline.push({
+      $match: query
+    });
+
+    pipeline.push(
+      {
+        $lookup: {
+          from: "equipment",
+          localField: "equipment",
+          foreignField: "_id",
+          as: "equipment"
+        }
+      },
+      {
+        $lookup: {
+          from: "bateas",
+          localField: "equipment.batea",
+          foreignField: "_id",
+          as: "batea"
+        }
+      },
+      { $unwind: { path: "$batea", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "drivers",
+          localField: "equipment.driver",
+          foreignField: "_id",
+          as: "driver"
+        }
+      },
+      { $unwind: { path: "$driver", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "trailers",
+          localField: "equipment.trailer",
+          foreignField: "_id",
+          as: "trailer"
+        }
+      },
+      { $unwind: { path: "$trailer", preserveNullAndEmptyArrays: true } },
+      {
+        $group: {
+          _id: "$_id",
+          departure_date: { $first: "$departure_date" },
+          arrival_date: { $first: "$arrival_date" },
+          cost: { $first: "$cost" },
+          km: { $first: "$km" },
+          starting_location: { $first: "$starting_location" },
+          final_location: { $first: "$final_location" },
+          destination_description: { $first: "$destination_description" },
+          equipment: {
+            $first: {
+              _id: "$equipment._id",
+              description: "$equipment.description",
+              batea: "$batea",
+              driver: "$driver",
+              trailer: "$trailer"
+            }
+          }
+        }
+      }
+    );
+
+    if (bateaFilterList && bateaFilterList.length > 0) {
+      pipeline.push({
+        $match: {
+          "equipment.batea.patent": { $in: bateaFilterList }
+        }
+      });
+    }
+
+    if (driverFilterList && driverFilterList.length > 0) {
+      pipeline.push({
+        $match: {
+          "equipment.driver.legajo": { $in: driverFilterList }
+        }
+      });
+    }
+
+    if (trailerFilterList && trailerFilterList.length > 0) {
+      pipeline.push({
+        $match: {
+          "equipment.trailer.patent": { $in: trailerFilterList }
+        }
+      });
+    }
+
+    pipeline.push({
+      $skip: startIndex
+    });
+
+    pipeline.push({
+      $limit: perPage
+    });
+
+    const travels = await Travel.aggregate(pipeline);
+
     return res.json(
       new EntityListResponse(travels, totalTravels, startIndex, totalPages)
     );
@@ -129,22 +207,21 @@ const getTravelById = async (req: Request, res: Response) => {
     const { travelId } = req.params;
     const travel = await Travel.findById(travelId).populate({
       path: "equipment",
-      populate: [
-        {
-          path: "batea",
-          model: "Batea",
-        },
-        {
-          path: "driver",
-          model: "Driver",
-          select: "legajo name surname",
-        },
-        {
-          path: "trailer",
-          model: "Trailer",
-          select: "patent type",
-        },
-      ],
+      populate: [{
+        path: "batea",
+        model: "Batea",
+      },
+      {
+        path: "driver",
+        model: "Driver",
+        select: "legajo name surname",
+      },
+      {
+        path: "trailer",
+        model: "Trailer",
+        select: "patent type",
+      }
+      ]
     });
 
     if (!travel) {
@@ -160,16 +237,7 @@ const getTravelById = async (req: Request, res: Response) => {
 const updateTravelById = async (req: Request, res: Response) => {
   try {
     const { travelId } = req.params;
-    const {
-      departure_date,
-      arrival_date,
-      cost,
-      km,
-      starting_location,
-      final_location,
-      equipment,
-      destination_description,
-    } = req.body;
+    const { departure_date, arrival_date, cost, km, starting_location, final_location, equipment, destination_description } = req.body;
 
     const equipmentFound = await Equipment.findOne({ _id: equipment });
 
@@ -185,25 +253,19 @@ const updateTravelById = async (req: Request, res: Response) => {
     });
 
     if (existingTravel) {
-      return res
-        .status(409)
-        .json({ message: "El chofer ya tiene un viaje en esa fecha" });
+      return res.status(409).json({ message: "El chofer ya tiene un viaje en esa fecha" });
     }
 
-    const updatedTravel = await Travel.findByIdAndUpdate(
-      travelId,
-      {
-        departure_date: departure_date,
-        arrival_date: arrival_date,
-        cost: cost,
-        km: km,
-        starting_location: starting_location,
-        final_location: final_location,
-        equipment: equipmentFound,
-        destination_description: destination_description,
-      },
-      { new: true }
-    );
+    const updatedTravel = await Travel.findByIdAndUpdate(travelId, {
+      departure_date: departure_date,
+      arrival_date: arrival_date,
+      cost: cost,
+      km: km,
+      starting_location: starting_location,
+      final_location: final_location,
+      equipment: equipmentFound,
+      destination_description: destination_description
+    }, { new: true });
 
     if (!updatedTravel) {
       return res.status(404).json({ message: "Viaje no encontrado" });
@@ -238,10 +300,4 @@ const deleteTravelById = async (req: Request, res: Response) => {
   }
 };
 
-export {
-  createTravel,
-  getTravels,
-  getTravelById,
-  updateTravelById,
-  deleteTravelById,
-};
+export { createTravel, postSearchTravels, getTravelById, updateTravelById, deleteTravelById };
