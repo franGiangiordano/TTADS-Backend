@@ -2,8 +2,9 @@ import { Request, Response } from "express";
 import Batea from "../models/batea";
 import Equipment from "../models/equipment";
 import { EntityListResponse } from "../models/entity.list.response.model";
+import { Messages } from "../constants/messages.constant";
 
-const createBatea = async (req: Request, res: Response) => {
+const createBatea = async (req: any, res: any) => {
   try {
     const bateaSaved = await Batea.create(req.body);
     return res.status(201).json(bateaSaved);
@@ -18,7 +19,7 @@ const createBatea = async (req: Request, res: Response) => {
   }
 };
 
-const getBateaById = async (req: Request, res: Response) => {
+const getBateaById = async (req: any, res: any) => {
   const { bateaId } = req.params;
 
   try {
@@ -48,7 +49,7 @@ const getBateas = async (req: Request, res: Response) => {
     const totalPages = Math.ceil(totalBateas / perPage);
 
     const startIndex = (page - 1) * perPage;
-    console.log(startIndex);
+
     const bateas = await Batea.find(search != "" ? searchOptions : {})
       .skip(startIndex)
       .limit(perPage);
@@ -58,11 +59,11 @@ const getBateas = async (req: Request, res: Response) => {
     );
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "No se obtuvo la lista de bateas" });
+    return res.status(500).json({ message: Messages.CannotGetBatea });
   }
 };
 
-const updatebateaById = async (req: Request, res: Response) => {
+const updatebateaById = async (req: any, res: any) => {
   try {
     const updatedbatea = await Batea.findByIdAndUpdate(
       req.params.bateaId,
@@ -86,7 +87,7 @@ const updatebateaById = async (req: Request, res: Response) => {
   }
 };
 
-const deletebateaById = async (req: Request, res: Response) => {
+const deletebateaById = async (req: any, res: any) => {
   const { bateaId } = req.params;
 
   try {
