@@ -268,6 +268,20 @@ const updateTravelById = async (req: Request, res: Response) => {
         .json({ message: "El chofer ya tiene un viaje en esa fecha" });
     }
 
+    const existingRepair = await Repair.findOne({
+      equipment: equipmentFound._id,
+      createdAt: {
+        $gte: new Date(departure_date).setHours(0, 0, 0, 0),
+        $lte: new Date(arrival_date).setHours(23, 59, 59, 999),
+      },
+    });
+
+    if (existingRepair) {
+      return res.status(409).json({
+        message: "El equipo tiene una reparacion programada para esa fecha",
+      });
+    }
+
     const updatedTravel = await Travel.findByIdAndUpdate(
       travelId,
       {
