@@ -4,7 +4,7 @@
   "description": "**Tecnicas y tecnologias avanzadas de Desarrollo de software**<br>\r **Trabajo Práctico**<br>\r **Ingeniería en Sistemas de Información**<br>\r **Comisión Nº: 304**<br>",
   "scripts": {
     "build": "tsc -p ./tsconfig.json",
-    "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/index.js\"",
+    "start:dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/src/index.js\"",
     "test": "jest --detectOpenHandles"
   },
   "keywords": [],
