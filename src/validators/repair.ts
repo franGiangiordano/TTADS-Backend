@@ -12,7 +12,7 @@ const validatorRepair: ((
         description: req.body.description,
         cost: req.body.cost,
         equipment: req.body.equipment,
-        km: req.body.km,
+        km: req.body.km ? parseInt(req.body.km) : undefined,
       };
 
       const isPutRequest = req.method === "PUT";
